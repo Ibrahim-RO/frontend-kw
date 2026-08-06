@@ -1,8 +1,17 @@
-import { Form, FormError, FormField, FormInput, FormSubmit, FormTextArea } from '@/src/shared/components/forms'
+'use client'
+
+import { Form, FormField, FormInput, FormSubmit } from '@/src/shared/components/forms'
+import { toast } from 'sonner'
 
 export default function LoginForm() {
   return (
-    <Form className="space-y-5">
+    <Form
+      className="space-y-5"
+      onSubmit={(event) => {
+        event.preventDefault()
+        toast.success('Inicio de sesión exitoso')
+      }}
+    >
       <FormField>
         <label htmlFor="email" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-600">
           Correo electrónico
@@ -50,9 +59,7 @@ export default function LoginForm() {
         </div>        
       </FormField>         
 
-      <FormSubmit
-        className="bg-red-700  text-white  hover:bg-red-800  focus-visible:outline-red-800"
-      >
+      <FormSubmit className="bg-red-700 text-white hover:bg-red-800 focus-visible:outline-red-800">
         Iniciar sesión
         <span aria-hidden="true">→</span>
       </FormSubmit>
