@@ -1,16 +1,50 @@
 'use client'
 
-import { Form, FormField, FormInput, FormSubmit } from '@/src/shared/components/forms'
+import { Form, FormError, FormField, FormInput, FormSubmit } from '@/src/shared/components/forms'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner'
+import { loginForm } from '../schemas';
+import { useMutation } from '@tanstack/react-query';
+import { loginAction } from '../actions/login.action';
+import { useRouter } from 'next/navigation';
+
 
 export default function LoginForm() {
+  const router = useRouter();
+  
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(loginForm),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: loginAction,
+    onError: () => {
+      toast.error('Credenciales incorrectas');
+    },
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.message)
+        return
+      }
+      toast.success('Inicio de sesión satisfactorio');
+      router.replace('/admin/usuarios')
+    }
+  })
+
+  const onSubmit = (data: { email: string; password: string }) => {
+    mutate(data);
+  }
+
+
   return (
     <Form
       className="space-y-5"
-      onSubmit={(event) => {
-        event.preventDefault()
-        toast.success('Inicio de sesión exitoso')
-      }}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <FormField>
         <label htmlFor="email" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-600">
@@ -23,14 +57,14 @@ export default function LoginForm() {
           </svg>
           <FormInput
             id="email"
-            name="email"
             type="email"
             autoComplete="email"
-            required
             placeholder="agente@kwmexico.com"
             className='pl-10'
+            {...register('email')}
           />
         </div>
+        {errors.email && <FormError>{errors.email.message}</FormError>}
       </FormField>
 
       <FormField>
@@ -49,15 +83,15 @@ export default function LoginForm() {
           </svg>
           <FormInput
             id="password"
-            name="password"
             type="password"
             autoComplete="current-password"
-            required
             placeholder="••••••••"
             className='pl-10'
-          />          
-        </div>        
-      </FormField>         
+            {...register('password')}
+          />
+        </div>
+        {errors.password && <FormError>{errors.password.message}</FormError>}
+      </FormField>
 
       <FormSubmit className="bg-red-700 text-white hover:bg-red-800 focus-visible:outline-red-800">
         Iniciar sesión
@@ -67,4 +101,3 @@ export default function LoginForm() {
   )
 }
 
- 

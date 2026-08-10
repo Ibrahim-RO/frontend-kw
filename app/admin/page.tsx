@@ -1,4 +1,4 @@
-import LoginForm from '@/src/features/admin/login/components/LoginForm'
+import LoginForm from '@/src/features/admin/auth/components/LoginForm'
 import Link from 'next/link'
 
 const heroImage = '/image-login.webp';
