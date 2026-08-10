@@ -1,7 +1,9 @@
+import Hero from "@/src/features/website/components/home/Hero";
+
 export default function Home() {
   return (
     <>
-      <p>Hola mundo!!!!</p>
+      <Hero />
     </>
   );
 }
