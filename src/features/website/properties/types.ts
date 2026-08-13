@@ -110,6 +110,25 @@ export type PropertiesFilters = {
   Filter_Min_Lot_Area: string | null
 }
 
+export const emptyFilters: PropertiesFilters = {
+  Filter_Operation: '*',
+  Filter_Type: '*',
+  Filter_Min_Price: '',
+  Filter_Max_Price: '',
+  Filter_Estado: null,
+  Filter_Municipio: null,
+  Filter_Colonia: null,
+  Filter_Calle: null,
+  Filter_Codigo_Postal: null,
+  Filter_Bed: null,
+  Filter_Bath: null,
+  Filter_Year: null,
+  Filter_Max_Living_Area: null,
+  Filter_Min_Living_Area: null,
+  Filter_Max_Lot_Area: null,
+  Filter_Min_Lot_Area: null,
+}
+
 export type MapBounds = {
   TopLeft_Latitude: number
   TopLeft_Longitude: number
