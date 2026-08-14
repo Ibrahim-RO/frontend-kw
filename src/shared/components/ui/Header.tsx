@@ -19,7 +19,7 @@ const navigationItems: NavigationItem[] = [
     { href: "agentes.html", label: "Agentes" },
     { href: "/propiedades", label: "Propiedades" },
     {
-        href: "centers.html",
+        href: "/centros-de-mercado",
         label: "Centros de Mercado",
         mobileLabel: "Centros",
     },

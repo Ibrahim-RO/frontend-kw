@@ -158,3 +158,38 @@ export const mexicoBounds: MapBounds = {
   BottomRigth_Latitude: 14.3886,
   BottomRigth_Longitude: -86.4396,
 }
+
+export type MarketCenter = {
+  ID: number
+  Market_Center_ID: number
+  Market_Center: string
+  Key: string
+  Phone: string | null
+  Email: string | null
+  Country: string
+  State: string
+  Municipality: string
+  Street: string
+  Postal_Code: string | null
+  Description: string
+  Logo_Url_One: string | null
+  Logo_Url_Two: string | null
+}
+
+export type MarketCentersListResponse = {
+  success: boolean
+  message: string
+  data: MarketCenter[]
+}
+
+export type MarketCenterDetailResponse = {
+  success: boolean
+  message: string
+  data: MarketCenter[]
+}
+
+export type MarketCenterAgentsResponse = {
+  success: boolean
+  message: string
+  data: { Agents_Data: PropertyAgent[]; Total_Agents: number }
+}
