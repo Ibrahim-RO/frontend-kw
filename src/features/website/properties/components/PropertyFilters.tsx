@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { MapPin, Ruler, Search, Tag } from 'lucide-react'
+import { ChevronDown, MapPin, Ruler, Search, Tag } from 'lucide-react'
 import { Form, FormField, FormInput, FormLabel, FormSubmit } from '@/src/shared/components/forms'
 import {
   emptyFiltersForm,
@@ -16,6 +16,9 @@ import type { PropertiesFilters } from '../types'
 
 const selectClassName =
   'h-12 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-kw-primary focus:ring-3 focus:ring-red-100'
+
+const summaryClassName =
+  'mb-3 flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-bold tracking-wider text-kw-primary uppercase marker:hidden [&::-webkit-details-marker]:hidden'
 
 type PropertyFiltersProps = {
   onSearch: (filters: PropertiesFilters) => void
@@ -78,43 +81,51 @@ export function PropertyFilters({ onSearch, onClear }: PropertyFiltersProps) {
             ))}
           </select>
 
-          <select
-            className={selectClassName}
-            disabled={!selectedEstado}
-            {...municipioField}
-            onChange={(event) => {
-              municipioField.onChange(event)
-              setValue('Filter_Colonia', '')
-            }}
-          >
-            <option value="">{selectedEstado ? 'Todos los municipios' : 'Elige un estado primero'}</option>
-            {municipioOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          {selectedEstado && (
+            <select
+              className={selectClassName}
+              {...municipioField}
+              onChange={(event) => {
+                municipioField.onChange(event)
+                setValue('Filter_Colonia', '')
+              }}
+            >
+              <option value="">Todos los municipios</option>
+              {municipioOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          )}
 
-          <select className={selectClassName} disabled={!selectedMunicipio} {...register('Filter_Colonia')}>
-            <option value="">{selectedMunicipio ? 'Todas las colonias' : 'Elige un municipio primero'}</option>
-            {coloniaOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          {selectedMunicipio && (
+            <>
+              <select className={selectClassName} {...register('Filter_Colonia')}>
+                <option value="">Todas las colonias</option>
+                {coloniaOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
 
-          <FormInput placeholder="Calle" {...register('Filter_Calle')} />
-          <FormInput placeholder="Código Postal" {...register('Filter_Codigo_Postal')} />
+              <FormInput placeholder="Calle" {...register('Filter_Calle')} />
+              <FormInput placeholder="Código Postal" {...register('Filter_Codigo_Postal')} />
+            </>
+          )}
         </div>
       </div>
 
       <div className="my-4 border-t border-neutral-200" />
 
-      <div className="mb-5">
-        <span className="mb-3 flex items-center gap-2 text-xs font-bold tracking-wider text-kw-primary uppercase">
-          <Tag size={14} /> Tipo y Precio
-        </span>
+      <details className="group mb-5" open>
+        <summary className={summaryClassName}>
+          <span className="flex items-center gap-2">
+            <Tag size={14} /> Tipo y Precio
+          </span>
+          <ChevronDown size={14} className="transition-transform duration-200 group-open:rotate-180" />
+        </summary>
         <div className="grid grid-cols-1 gap-3">
           <select className={selectClassName} {...register('Filter_Operation')}>
             {operationOptions.map((option) => (
@@ -138,14 +149,17 @@ export function PropertyFilters({ onSearch, onClear }: PropertyFiltersProps) {
             <FormInput type="number" min={0} placeholder="Precio máx" {...register('Filter_Max_Price')} />
           </div>
         </div>
-      </div>
+      </details>
 
       <div className="my-4 border-t border-neutral-200" />
 
-      <div className="mb-5">
-        <span className="mb-3 flex items-center gap-2 text-xs font-bold tracking-wider text-kw-primary uppercase">
-          <Ruler size={14} /> Medidas
-        </span>
+      <details className="group mb-5">
+        <summary className={summaryClassName}>
+          <span className="flex items-center gap-2">
+            <Ruler size={14} /> Medidas
+          </span>
+          <ChevronDown size={14} className="transition-transform duration-200 group-open:rotate-180" />
+        </summary>
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-1">
             <FormLabel className="text-xs text-kw-tertiary">Construcción (M2)</FormLabel>
@@ -164,12 +178,15 @@ export function PropertyFilters({ onSearch, onClear }: PropertyFiltersProps) {
             </div>
           </div>
         </div>
-      </div>
+      </details>
 
       <div className="my-4 border-t border-neutral-200" />
 
-      <div className="mb-5">
-        <span className="mb-3 block text-xs font-bold tracking-wider text-kw-primary uppercase">Otros</span>
+      <details className="group mb-5">
+        <summary className={summaryClassName}>
+          <span>Otros</span>
+          <ChevronDown size={14} className="transition-transform duration-200 group-open:rotate-180" />
+        </summary>
         <div className="grid grid-cols-2 gap-3">
           <FormInput type="number" min={0} placeholder="Recámaras" {...register('Filter_Bed')} />
           <FormInput type="number" min={0} placeholder="Baños" {...register('Filter_Bath')} />
@@ -182,7 +199,7 @@ export function PropertyFilters({ onSearch, onClear }: PropertyFiltersProps) {
             {...register('Filter_Year')}
           />
         </div>
-      </div>
+      </details>
 
       <div className="my-4 border-t border-neutral-200" />
 
