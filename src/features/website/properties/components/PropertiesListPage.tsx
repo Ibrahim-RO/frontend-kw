@@ -10,7 +10,7 @@ import { usePolygonSearch, MAX_POLYGON_PROPERTIES } from '../hooks/usePolygonSea
 import { PropertyFilters } from './PropertyFilters'
 import { PropertiesGrid } from './PropertiesGrid'
 import { Pagination } from './Pagination'
-import { getTotalPages, PAGE_SIZE } from '../lib/pagination'
+import { getTotalPages, getPageSlice, PAGE_SIZE } from '../lib/pagination'
 import { geocodeAddress } from '../api/geocode.client'
 import { boundsFromGeocodeResult } from '../lib/geocode-bounds'
 import type { LatLngPoint } from '../lib/geometry'
@@ -105,18 +105,22 @@ export function PropertiesListPage() {
   let isError = false
 
   if (mode === 'polygon') {
+    // Aca "all" ya es el arreglo completo filtrado por poligono, no un
+    // bloque del backend, asi que se recorta directo con PAGE_SIZE.
     const all = polygonQuery.data?.properties ?? []
     properties = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
     totalCount = all.length
     isLoading = polygonQuery.isLoading
     isError = polygonQuery.isError
   } else if (mode === 'filters') {
-    properties = searchQuery.data?.data.Properties_Data ?? []
+    const [start, end] = getPageSlice(page)
+    properties = (searchQuery.data?.data.Properties_Data ?? []).slice(start, end)
     totalCount = searchQuery.data?.data.Total_Properties ?? 0
     isLoading = searchQuery.isLoading
     isError = searchQuery.isError
   } else {
-    properties = defaultQuery.data?.data.Properties_Data ?? []
+    const [start, end] = getPageSlice(page)
+    properties = (defaultQuery.data?.data.Properties_Data ?? []).slice(start, end)
     totalCount = defaultQuery.data?.data.Total_Properties ?? 0
     isLoading = defaultQuery.isLoading
     isError = defaultQuery.isError
@@ -157,10 +161,14 @@ export function PropertiesListPage() {
         Propiedades Destacadas
       </h1>
 
-      <PropertyFilters onSearch={handleSearch} onClear={handleClear} />
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <aside className="w-full lg:w-64 lg:shrink-0">
+          <div className="lg:sticky lg:top-28">
+            <PropertyFilters onSearch={handleSearch} onClear={handleClear} />
+          </div>
+        </aside>
 
-      <div className="relative flex flex-col gap-8 lg:flex-row">
-        <div className="w-full lg:w-2/3">
+        <div className="min-w-0 flex-1">
           {mode === 'polygon' && (
             <p className="mb-4 text-sm text-kw-tertiary">
               Mostrando propiedades dentro de la zona marcada en el mapa.
@@ -168,20 +176,25 @@ export function PropertiesListPage() {
                 ` El área es muy grande, se muestran solo las primeras ${MAX_POLYGON_PROPERTIES} propiedades encontradas — dibuja una zona más chica para ver todo.`}
             </p>
           )}
-          <PropertiesGrid properties={properties} isLoading={isLoading} isError={isError} />
-          <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
-        </div>
 
-        <div className="z-10 w-full lg:w-1/3">
-          <div className="sticky top-28 h-[calc(100vh-10rem)] overflow-hidden rounded-3xl border border-neutral-200 shadow-xl">
-            <PropertiesMap
-              properties={properties}
-              onBoundsChange={setBounds}
-              onPolygonComplete={handlePolygonComplete}
-              flyTo={flyTo}
-              polygonActive={mode === 'polygon'}
-              onClearPolygon={handleClearPolygon}
-            />
+          <div className="relative flex flex-col gap-8 xl:flex-row">
+            <div className="@container w-full xl:w-3/5">
+              <PropertiesGrid properties={properties} isLoading={isLoading} isError={isError} />
+              <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+            </div>
+
+            <div className="z-10 w-full xl:w-2/5">
+              <div className="sticky top-28 h-[calc(100vh-10rem)] overflow-hidden rounded-3xl border border-neutral-200 shadow-xl">
+                <PropertiesMap
+                  properties={properties}
+                  onBoundsChange={setBounds}
+                  onPolygonComplete={handlePolygonComplete}
+                  flyTo={flyTo}
+                  polygonActive={mode === 'polygon'}
+                  onClearPolygon={handleClearPolygon}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchProperties } from '../api/properties.client'
-import { PAGE_SIZE } from '../lib/pagination'
+import { getBackendOffset } from '../lib/pagination'
 
 export function useProperties(page: number) {
+  const offset = getBackendOffset(page)
   return useQuery({
-    queryKey: ['properties', page],
-    queryFn: () => fetchProperties((page - 1) * PAGE_SIZE),
+    queryKey: ['properties', offset],
+    queryFn: () => fetchProperties(offset),
   })
 }

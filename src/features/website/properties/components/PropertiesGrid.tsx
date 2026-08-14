@@ -34,7 +34,7 @@ export function PropertiesGrid({ properties, isLoading, isError }: PropertiesGri
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 @lg:grid-cols-2">
       {properties.map((property) => (
         <PropertyCard key={property.ID} property={property} />
       ))}

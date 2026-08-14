@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { searchProperties } from '../api/properties.client'
-import { PAGE_SIZE } from '../lib/pagination'
+import { BACKEND_PAGE_SIZE } from '../lib/pagination'
 import { getPolygonBounds, isPointInPolygon, type LatLngPoint } from '../lib/geometry'
 import type { PropertiesFilters } from '../types'
 
@@ -19,11 +19,11 @@ export function usePolygonSearch(polygon: LatLngPoint[] | null, filters: Propert
       const first = await searchProperties({ ...bounds, ...filters, Properties_Listing_Init: 0 })
       const total = first.data.Total_Properties
       const fetchTotal = Math.min(total, MAX_POLYGON_PROPERTIES)
-      const remainingPages = Math.max(0, Math.ceil(fetchTotal / PAGE_SIZE) - 1)
+      const remainingPages = Math.max(0, Math.ceil(fetchTotal / BACKEND_PAGE_SIZE) - 1)
 
       const rest = await Promise.all(
         Array.from({ length: remainingPages }, (_, index) =>
-          searchProperties({ ...bounds, ...filters, Properties_Listing_Init: (index + 1) * PAGE_SIZE }),
+          searchProperties({ ...bounds, ...filters, Properties_Listing_Init: (index + 1) * BACKEND_PAGE_SIZE }),
         ),
       )
 

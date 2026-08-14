@@ -53,6 +53,17 @@ export type PropertiesListResponse = {
   data: { Properties_Data: Property[]; Total_Properties: number }
 }
 
+export type LocationOption = { value: string; label: string }
+
+// value = version sin acentos que espera Filter_Estado/Municipio/Colonia,
+// label = como se ve en los datos reales (con acentos). Los municipios se
+// indexan por el value del estado, y las colonias por "value_estado|||value_municipio".
+export type LocationsCatalog = {
+  estados: LocationOption[]
+  municipios: Record<string, LocationOption[]>
+  colonias: Record<string, LocationOption[]>
+}
+
 export type PropertyPhoto = {
   ID: number
   Property_ID: number
