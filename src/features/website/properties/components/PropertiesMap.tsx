@@ -96,22 +96,30 @@ function FreehandDrawControl({
   useEffect(() => {
     if (!isArmed) return
 
+    const container = map.getContainer()
     map.dragging.disable()
-    map.getContainer().style.cursor = 'crosshair'
+    container.style.cursor = 'crosshair'
+    // Sin esto el navegador interpreta el arrastre como una selección de
+    // texto nativa (se ve azul, como si fueras a copiar) y el mouseup deja
+    // de llegarle al mapa, dejando el trazo pegado sin poder cerrarlo.
+    container.style.userSelect = 'none'
 
-    const handleDown = (event: L.LeafletMouseEvent) => {
+    const handleDown = (event: MouseEvent) => {
+      event.preventDefault()
       drawingRef.current = true
-      pointsRef.current = [event.latlng]
-      previewRef.current = L.polyline([event.latlng], { color: '#B40101', weight: 3 }).addTo(map)
+      const latlng = map.mouseEventToLatLng(event)
+      pointsRef.current = [latlng]
+      previewRef.current = L.polyline([latlng], { color: '#B40101', weight: 3 }).addTo(map)
     }
 
-    const handleMove = (event: L.LeafletMouseEvent) => {
+    const handleMove = (event: MouseEvent) => {
       if (!drawingRef.current || !previewRef.current) return
+      const latlng = map.mouseEventToLatLng(event)
       const lastPoint = pointsRef.current[pointsRef.current.length - 1]
       const lastPixel = map.latLngToContainerPoint(lastPoint)
-      const currentPixel = map.latLngToContainerPoint(event.latlng)
+      const currentPixel = map.latLngToContainerPoint(latlng)
       if (lastPixel.distanceTo(currentPixel) < SAMPLE_DISTANCE_PX) return
-      pointsRef.current.push(event.latlng)
+      pointsRef.current.push(latlng)
       previewRef.current.setLatLngs(pointsRef.current)
     }
 
@@ -135,16 +143,21 @@ function FreehandDrawControl({
       onDrawEndRef.current()
     }
 
-    map.on('mousedown', handleDown)
-    map.on('mousemove', handleMove)
-    map.on('mouseup', handleUp)
+    // mousedown se queda en el contenedor del mapa (solo empieza a dibujar
+    // si el clic fue sobre el mapa), pero move/up van en document: así el
+    // trazo se sigue actualizando y sobre todo se cierra bien aunque el
+    // mouse salga del mapa o se suelte fuera de él.
+    container.addEventListener('mousedown', handleDown)
+    document.addEventListener('mousemove', handleMove)
+    document.addEventListener('mouseup', handleUp)
 
     return () => {
       map.dragging.enable()
-      map.getContainer().style.cursor = ''
-      map.off('mousedown', handleDown)
-      map.off('mousemove', handleMove)
-      map.off('mouseup', handleUp)
+      container.style.cursor = ''
+      container.style.userSelect = ''
+      container.removeEventListener('mousedown', handleDown)
+      document.removeEventListener('mousemove', handleMove)
+      document.removeEventListener('mouseup', handleUp)
       if (previewRef.current) {
         map.removeLayer(previewRef.current)
         previewRef.current = null

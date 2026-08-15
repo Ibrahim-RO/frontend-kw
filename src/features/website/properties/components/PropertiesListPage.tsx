@@ -169,6 +169,12 @@ export function PropertiesListPage() {
         </aside>
 
         <div className="min-w-0 flex-1">
+          <p className="mb-5 text-sm font-semibold text-kw-tertiary">
+            {isLoading
+              ? 'Buscando propiedades...'
+              : `${totalCount} ${totalCount === 1 ? 'propiedad encontrada' : 'propiedades encontradas'}`}
+          </p>
+
           {mode === 'polygon' && (
             <p className="mb-4 text-sm text-kw-tertiary">
               Mostrando propiedades dentro de la zona marcada en el mapa.

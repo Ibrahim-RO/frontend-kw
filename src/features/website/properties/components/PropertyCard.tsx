@@ -1,59 +1,75 @@
 import Link from 'next/link'
-import { Bath, Bed, MapPin } from 'lucide-react'
 import type { Property } from '../types'
-import { formatPrice, getPropertyLocation, isRental } from '../lib/format'
+import { formatPrice, getAgentFullName, getPropertyLocation, isRental } from '../lib/format'
 import { getOperationLabel } from '../lib/property-options'
+import { useAgent } from '../hooks/useAgent'
 
 export function PropertyCard({ property }: { property: Property }) {
+  const { data: agent } = useAgent(property.Agent_ID)
+
   return (
-    <Link
-      href={`/propiedades/${property.ID}`}
-      className="group block overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-300 hover:border-kw-primary/50 hover:shadow-lg"
-    >
-      <div className="relative h-48 overflow-hidden bg-neutral-100">
+    <article className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
+      <Link href={`/propiedades/${property.ID}`} className="relative block aspect-[4/3] overflow-hidden bg-neutral-900">
         {property.Photo_URL ? (
           <img
             src={property.Photo_URL}
             alt={property.Title}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm text-kw-tertiary">
-            Sin foto
-          </div>
+          <div className="flex h-full w-full items-center justify-center text-sm text-neutral-400">Sin foto</div>
         )}
-        <div className="absolute top-3 right-3 rounded-full bg-kw-primary px-3 py-1 text-xs font-bold text-white shadow-md">
+        <span className="absolute top-3.5 left-3.5 rounded-full border border-white/25 bg-white/15 px-3.5 py-1.5 text-xs font-bold tracking-wide text-white uppercase backdrop-blur-sm">
           {getOperationLabel(property.Property_Operation_ID)}
-        </div>
-      </div>
+        </span>
+      </Link>
 
-      <div className="p-4 md:p-5">
-        <h3 className="mb-2 line-clamp-1 font-heading text-lg font-bold text-kw-secondary">
-          {property.Title}
-        </h3>
-        <p className="mb-4 flex items-center text-xs text-kw-tertiary md:text-sm">
-          <MapPin className="mr-1.5 text-kw-primary" size={14} />
-          {getPropertyLocation(property)}
-        </p>
-        <div className="flex items-center justify-between border-t border-neutral-200 pt-3">
-          <div className="text-lg font-bold text-kw-primary md:text-xl">
-            {formatPrice(property.Current_Price, property.Currency)}
-            {isRental(property) && <span className="text-xs font-normal text-kw-tertiary">/mes</span>}
-          </div>
-          <div className="flex gap-2.5 text-xs text-kw-tertiary">
-            {property.Total_Bed != null && (
-              <span className="flex items-center gap-1">
-                <Bed size={14} /> {property.Total_Bed}
-              </span>
-            )}
-            {property.Total_Bath != null && (
-              <span className="flex items-center gap-1">
-                <Bath size={14} /> {property.Total_Bath}
-              </span>
-            )}
-          </div>
+      <div className="p-5">
+        <div className="mb-1.5 text-xl font-extrabold text-kw-primary">
+          {formatPrice(property.Current_Price, property.Currency)}
+          {isRental(property) && <span className="text-xs font-normal text-kw-tertiary">/mes</span>}
         </div>
+        <Link href={`/propiedades/${property.ID}`}>
+          <h3 className="mb-1.5 line-clamp-2 font-heading text-base leading-tight font-bold text-kw-secondary hover:text-kw-primary">
+            {property.Title}
+          </h3>
+        </Link>
+        <p className="mb-3.5 text-xs text-kw-tertiary">{getPropertyLocation(property) || property.Geo_Direccion_Completa}</p>
+
+        <ul className="mb-4 flex flex-wrap gap-2">
+          {property.Total_Bed != null && (
+            <li className="rounded-md bg-neutral-100 px-2.5 py-1.5 text-xs font-semibold text-neutral-700">
+              {property.Total_Bed} Rec
+            </li>
+          )}
+          {property.Total_Bath != null && (
+            <li className="rounded-md bg-neutral-100 px-2.5 py-1.5 text-xs font-semibold text-neutral-700">
+              {property.Total_Bath} Baños
+            </li>
+          )}
+          {property.Living_Area != null && (
+            <li className="rounded-md bg-neutral-100 px-2.5 py-1.5 text-xs font-semibold text-neutral-700">
+              {property.Living_Area} m²
+            </li>
+          )}
+        </ul>
+
+        <div className="border-t border-neutral-200 pt-3.5">
+          <div className="mb-3">
+            <span className="block text-xs tracking-wide text-neutral-400 uppercase">Asesor asignado</span>
+            <span className="block text-sm font-bold text-kw-secondary">
+              {agent ? getAgentFullName(agent) : 'KW México'}
+            </span>
+          </div>
+          <Link
+            href={`/propiedades/${property.ID}`}
+            className="block w-full rounded-sm bg-kw-primary px-4 py-2.5 text-center text-xs font-bold tracking-wider text-white uppercase transition-colors hover:bg-kw-secondary"
+          >
+            Ver detalles
+          </Link>
+        </div>
+        <p className="mt-3 text-xs text-neutral-400">Clave interna: {property.MLS_Number}</p>
       </div>
-    </Link>
+    </article>
   )
 }
