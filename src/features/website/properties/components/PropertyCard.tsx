@@ -9,7 +9,7 @@ export function PropertyCard({ property }: { property: Property }) {
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
-      <Link href={`/propiedades/${property.ID}`} className="relative block aspect-[4/3] overflow-hidden bg-neutral-900">
+      <Link href={`/propiedades/${property.ID}`} className="relative block aspect-4/3 overflow-hidden bg-neutral-900">
         {property.Photo_URL ? (
           <img
             src={property.Photo_URL}

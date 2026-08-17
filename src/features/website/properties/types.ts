@@ -88,6 +88,20 @@ export type PropertyAgent = {
   Agent_Status: number
   Luxury: number
   Market_Center: string | null
+  State?: string | null
+  Municipality?: string | null
+  Street?: string | null
+  Country?: string | null
+}
+
+export type AgentPropertiesResponse = {
+  success: boolean
+  message: string
+  data: {
+    Agent_Properties: Property[]
+    Agent_Data: PropertyAgent
+    Total_Properties: number
+  }
 }
 
 export type PropertyDetailResponse = {
