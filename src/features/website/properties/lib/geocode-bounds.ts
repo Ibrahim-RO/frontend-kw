@@ -19,3 +19,20 @@ export function boundsFromGeocodeResult(result: GeocodeResult): MapBounds {
     BottomRigth_Longitude: centerLon + lonSpan / 2,
   }
 }
+
+const DEGREES_PER_KM = 1 / 111
+
+// Caja cuadrada de radioKm alrededor de un punto, usada para "propiedades
+// cerca de mi ubicación" (geolocalización del navegador, no viene de
+// Nominatim asi que no hay boundingbox que reutilizar).
+export function boundsAroundPoint(lat: number, lon: number, radiusKm: number): MapBounds {
+  const latDelta = radiusKm * DEGREES_PER_KM
+  const lonDelta = (radiusKm * DEGREES_PER_KM) / Math.cos((lat * Math.PI) / 180)
+
+  return {
+    TopLeft_Latitude: lat + latDelta,
+    TopLeft_Longitude: lon - lonDelta,
+    BottomRigth_Latitude: lat - latDelta,
+    BottomRigth_Longitude: lon + lonDelta,
+  }
+}

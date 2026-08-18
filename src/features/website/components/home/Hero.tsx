@@ -1,5 +1,5 @@
-import { Search } from "lucide-react";
 import Image from "next/image";
+import { PropertySearchBar } from "@/src/features/website/properties/components/PropertySearchBar";
 
 export default function Hero() {
   return (
@@ -16,16 +16,7 @@ export default function Hero() {
           El camino a tu nuevo hogar empieza aquí con los expertos.
         </p>
 
-        <form action="/propiedades" method="get" className="mx-auto mt-10 flex max-w-5xl flex-col gap-3 rounded-3xl bg-kw-secondary/90 p-3 shadow-2xl shadow-black/25 backdrop-blur-md sm:flex-row sm:items-center sm:rounded-full" role="search">
-          <label htmlFor="hero-property-search" className="sr-only">Buscar propiedades por ubicación</label>
-          <div className="flex min-w-0 flex-1 items-center gap-3 px-3 sm:px-4">
-            <Search className="shrink-0 text-white/60" size={26} aria-hidden="true" />
-            <input id="hero-property-search" name="ubicacion" type="search" required autoComplete="street-address" placeholder="Busca por calle, colonia, municipio o estado..." className="min-w-0 flex-1 bg-transparent py-4 text-base text-white outline-none placeholder:text-white/55 sm:text-lg" />
-          </div>
-          <button type="submit" className="shrink-0 rounded-full bg-kw-primary px-9 py-4 text-base font-bold text-white transition hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-12">
-            Buscar
-          </button>
-        </form>
+        <PropertySearchBar />
       </div>
       <div className="absolute inset-x-0 bottom-0 h-1 bg-kw-primary" />
     </section>

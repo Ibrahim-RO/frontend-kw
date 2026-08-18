@@ -5,6 +5,7 @@ import AlliesInfoSection from "@/src/features/website/components/home/AlliesInfo
 import AwardsSection from "@/src/features/website/components/home/AwardsSection";
 import ContactSection from "@/src/features/website/components/home/ContactSection";
 import FamilyReunionSection from "@/src/features/website/components/home/FamilyReunionSection";
+import FeaturedPropertiesSection from "@/src/features/website/components/home/FeaturedPropertiesSection";
 import Hero from "@/src/features/website/components/home/Hero";
 import JoinSection from "@/src/features/website/components/home/JoinSection";
 import ProspectingCtaSection from "@/src/features/website/components/home/ProspectingCtaSection";
@@ -19,6 +20,7 @@ export default function Home() {
     <main>
       <Hero />
       <AwardsSection />
+      <FeaturedPropertiesSection />
       <AboutSection />
       <JoinSection />
       <FamilyReunionSection />

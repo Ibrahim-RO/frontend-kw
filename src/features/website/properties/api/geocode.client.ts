@@ -27,3 +27,10 @@ export async function geocodeAddress(query: GeocodeAddressQuery) {
   })
   return data[0] ?? null
 }
+
+export async function searchLocationSuggestions(query: string) {
+  const { data } = await geocodeClient.get<GeocodeResult[]>('', {
+    params: { q: query, limit: 5 },
+  })
+  return data
+}

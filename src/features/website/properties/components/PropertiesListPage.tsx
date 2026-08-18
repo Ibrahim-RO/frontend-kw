@@ -27,12 +27,18 @@ const PropertiesMap = dynamic(() => import('./PropertiesMap'), {
 
 type SearchMode = 'polygon' | 'filters' | 'default'
 
-export function PropertiesListPage({ initialLocation = '' }: { initialLocation?: string }) {
-  const [filters, setFilters] = useState<PropertiesFilters | null>(() =>
-    initialLocation ? { ...emptyFilters, Filter_Calle: initialLocation } : null,
-  )
-  const [bounds, setBounds] = useState<MapBounds>(mexicoBounds)
-  const [flyTo, setFlyTo] = useState<MapBounds | null>(null)
+type PropertiesListPageProps = {
+  initialLocation?: string
+  initialBounds?: MapBounds | null
+}
+
+export function PropertiesListPage({ initialLocation = '', initialBounds = null }: PropertiesListPageProps) {
+  const [filters, setFilters] = useState<PropertiesFilters | null>(() => {
+    if (initialBounds) return emptyFilters
+    return initialLocation ? { ...emptyFilters, Filter_Calle: initialLocation } : null
+  })
+  const [bounds, setBounds] = useState<MapBounds>(initialBounds ?? mexicoBounds)
+  const [flyTo, setFlyTo] = useState<MapBounds | null>(initialBounds)
   const [polygon, setPolygon] = useState<LatLngPoint[] | null>(null)
   const [page, setPage] = useState(1)
 
