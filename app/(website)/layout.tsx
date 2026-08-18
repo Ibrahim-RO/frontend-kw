@@ -1,6 +1,7 @@
 import Footer from "@/src/shared/components/ui/Footer";
 import Header from "@/src/shared/components/ui/Header";
 import AosInitializer from "@/src/shared/components/AosInitializer";
+import CookieConsent from "@/src/shared/components/cookies/CookieConsent";
 
 export default function Layout({ children }: LayoutProps<"/">) {
     return (
@@ -9,6 +10,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
             <Header />
             {children}
             <Footer />
+            <CookieConsent />
         </section>
     );
 }

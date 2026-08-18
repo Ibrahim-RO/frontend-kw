@@ -1,6 +1,7 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import CookieSettingsButton from "@/src/shared/components/cookies/CookieSettingsButton";
 
 const navigation = [
     { href: "/#inicio", label: "Inicio" },
@@ -67,6 +68,7 @@ export default function Footer() {
                     <nav className="flex flex-wrap gap-x-7 gap-y-3 text-sm" aria-label="Información legal">
                         <Link href="/terminos-uso" className="transition-colors hover:text-white">Términos de uso</Link>
                         <Link href="/aviso-privacidad" className="transition-colors hover:text-white">Aviso de privacidad</Link>
+                        <CookieSettingsButton />
                     </nav>
                 </div>
             </div>
