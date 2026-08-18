@@ -28,7 +28,7 @@ export default function Footer() {
                     <div>
                         <Link href="/" className="inline-block" aria-label="KW México — Inicio">
                             <img
-                                src="https://www.kwmexico.mx/assets/images/main_menu_section/footer-logo.png"
+                                src="/footer-logo.png"
                                 alt="Logo KW México"
                                 className="h-14 w-auto object-contain object-left"
                             />

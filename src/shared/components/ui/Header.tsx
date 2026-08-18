@@ -3,7 +3,7 @@
 import { ArrowUpRight, ExternalLink, Menu, Phone, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 
 type NavigationItem = { href: string; label: string; mobileLabel?: string; section?: string; homeOnly?: boolean };
 
@@ -36,11 +36,39 @@ export default function Header() {
     const visibleNavigation = navigationItems.filter((item) => isHome || !item.homeOnly);
 
     useEffect(() => {
-        const updateHash = () => setActiveHash(window.location.hash.slice(1));
-        updateHash();
-        window.addEventListener("hashchange", updateHash);
-        return () => window.removeEventListener("hashchange", updateHash);
-    }, [pathname]);
+        if (!isHome) {
+            return;
+        }
+
+        const sectionIds = navigationItems.flatMap((item) => item.section ? [item.section] : []);
+        let animationFrame = 0;
+
+        const updateActiveSection = () => {
+            const marker = window.scrollY + 120;
+            let current = sectionIds[0] ?? "inicio";
+
+            for (const id of sectionIds) {
+                const section = document.getElementById(id);
+                if (section && section.offsetTop <= marker) current = id;
+            }
+
+            setActiveHash(current);
+        };
+
+        const handleScroll = () => {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = requestAnimationFrame(updateActiveSection);
+        };
+
+        animationFrame = requestAnimationFrame(updateActiveSection);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        window.addEventListener("resize", handleScroll);
+        return () => {
+            cancelAnimationFrame(animationFrame);
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+        };
+    }, [isHome, pathname]);
 
     useEffect(() => {
         if (!isMenuOpen) return;
@@ -70,6 +98,18 @@ export default function Header() {
 
     const closeMenu = () => setIsMenuOpen(false);
 
+    const handleSectionNavigation = (event: ReactMouseEvent<HTMLAnchorElement>, item: NavigationItem) => {
+        if (!isHome || !item.section) return;
+        const target = document.getElementById(item.section);
+        if (!target) return;
+
+        event.preventDefault();
+        closeMenu();
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+        window.history.replaceState(null, "", `#${item.section}`);
+    };
+
     return (
         <>
             <header className="sticky top-0 z-50 h-20 border-b bg-white shadow-sm">
@@ -81,7 +121,7 @@ export default function Header() {
                     <div className="hidden flex-1 items-center justify-end gap-4 lg:flex xl:gap-7">
                         {visibleNavigation.map((item) => {
                             const active = isItemActive(item);
-                            return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={`relative whitespace-nowrap py-2 text-xs font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:bg-kw-primary after:transition-transform xl:text-sm ${active ? "text-kw-primary after:scale-x-100" : "text-neutral-700 after:scale-x-0 hover:text-kw-primary hover:after:scale-x-100"}`}>{item.label}</Link>;
+                            return <Link key={item.href} href={item.href} onClick={(event) => handleSectionNavigation(event, item)} aria-current={active ? "page" : undefined} className={`relative whitespace-nowrap py-2 text-xs font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-0.5 after:bg-kw-primary after:transition-transform xl:text-sm ${active ? "text-kw-primary after:scale-x-100" : "text-neutral-700 after:scale-x-0 hover:text-kw-primary hover:after:scale-x-100"}`}>{item.label}</Link>;
                         })}
                     </div>
 
@@ -120,7 +160,7 @@ export default function Header() {
                         <nav aria-label="Navegación móvil" className="flex flex-1 flex-col justify-center gap-2 py-5">
                             {visibleNavigation.map((item, index) => {
                                 const active = isItemActive(item);
-                                return <Link key={item.href} href={item.href} onClick={closeMenu} aria-current={active ? "page" : undefined} className={`group flex items-baseline gap-4 border-b py-3 text-xl font-semibold transition-colors hover:text-red-500 ${active ? "border-red-500 text-red-500" : "border-white/10"}`}><span className="text-xs font-normal tabular-nums text-red-500">{String(index + 1).padStart(2, "0")}</span>{item.mobileLabel ?? item.label}</Link>;
+                                return <Link key={item.href} href={item.href} onClick={(event) => item.section && isHome ? handleSectionNavigation(event, item) : closeMenu()} aria-current={active ? "page" : undefined} className={`group flex items-baseline gap-4 border-b py-3 text-xl font-semibold transition-colors hover:text-red-500 ${active ? "border-red-500 text-red-500" : "border-white/10"}`}><span className="text-xs font-normal tabular-nums text-red-500">{String(index + 1).padStart(2, "0")}</span>{item.mobileLabel ?? item.label}</Link>;
                             })}
                         </nav>
 
@@ -133,7 +173,7 @@ export default function Header() {
 
                         <div className="flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
                             <a href="tel:+524422512295" className="flex items-center gap-3 text-sm text-white/70 transition-colors hover:text-white"><Phone className="text-red-500" size={20} />(52) 442 251 2295</a>
-                            <Link href="/#contact" onClick={closeMenu} className="rounded-lg bg-red-600 px-6 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-white hover:text-neutral-900">Buscar Propiedades</Link>
+                            <Link href="/#contact" onClick={(event) => handleSectionNavigation(event, { href: "/#contact", label: "Contacto", section: "contact" })} className="rounded-lg bg-red-600 px-6 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-white hover:text-neutral-900">Buscar Propiedades</Link>
                         </div>
                     </div>
                 </div>

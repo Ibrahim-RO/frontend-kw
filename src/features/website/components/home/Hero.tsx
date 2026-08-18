@@ -1,38 +1,33 @@
-import React from 'react'
+import { Search } from "lucide-react";
+import Image from "next/image";
 
 export default function Hero() {
-    return (
-        <section id="inicio" className="relative h-[85vh] flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 z-0">
-                <div className="w-full h-full bg-cover bg-center transition-transform duration-10000 scale-110 hover:scale-100"
-                    data-alt="Una toma cinematográfica de alta resolución de una obra maestra de la arquitectura moderna en la Ciudad de México al atardecer. El edificio cuenta con elegantes muros de cristal que reflejan la luz de la hora dorada, rodeado de exuberantes áreas verdes urbanas. El ambiente es sofisticado y prémium, con una iluminación de alto contraste que resalta el lujo inmobiliario y la excelencia profesional."
-                    style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBD48wXxC8h6kAsfMFkPQYUcsrEPzytJ7v2QU5lfvx0x6U0jk5AgySZmrPu6C6Xt11g9ba5E4xEcAPflf_1GeWw7mAPJ_2FejRYQpdkSzuvF6pFOKdZ_uM3irBzEZ8n1jQQ3_r9SRmXoymccdeO7taJsZ9r2hHP1m-rfrioFKt7rxV3w1p7dDaZaR8Tbuyc9sI8DZJ4F08ikYqigwmb5cXi5Up6AiMqKu6vrYJBNHMH48DInyX6r75y')" }}>
-                </div>
-                <div className="absolute inset-0 bg-linear-to-b from-neutral-950/55 via-neutral-950/65 to-neutral-950/80"></div>
-            </div>
-            <div className="relative z-10 w-full max-w-container-max px-margin-desktop text-center text-white">
-                <h1
-                    className="font-display-lg text-display-lg-mobile md:text-display-lg mb-6 drop-shadow-xl animate-fade-in">
-                    Construye un <span className="text-red-500 italic">negocio</span>, <br className="hidden md:block" />no
-                    solo un empleo.
-                </h1>
-                <p className="font-body-lg text-body-lg mb-12 max-w-2xl mx-auto opacity-90">
-                    Únete a la red inmobiliaria #1 en crecimiento, unidades cerradas y comisiones brutas a nivel
-                    mundial.
-                </p>
-                <div className="glass-card max-w-4xl mx-auto p-2 rounded-xl flex flex-col md:flex-row gap-2 border border-white/20 bg-neutral-950/35 shadow-2xl">
-                    <div className="flex-1 flex items-center px-4 py-3 bg-white rounded-lg">
-                        <span className="material-symbols-outlined text-neutral-500 mr-2">search</span>
-                        <input
-                            className="w-full bg-transparent border-none focus:ring-0 text-neutral-950 placeholder:text-neutral-500 font-body-md"
-                            placeholder="Busca por ciudad, zona o agente..." type="text" />
-                    </div>
-                    <button
-                        className="bg-red-600 hover:bg-red-700 text-white px-10 py-4 rounded-lg font-label-bold text-label-bold transition-all transform hover:scale-[1.02]">
-                        Buscar Propiedades
-                    </button>
-                </div>
-            </div>
-        </section>
-    )
+  return (
+    <section id="inicio" className="relative isolate flex min-h-[calc(100svh-5rem)] items-center overflow-hidden bg-kw-secondary">
+      <Image src="/Fondo_New_Natural.png" alt="Residencia contemporánea con alberca" fill priority sizes="100vw" className="-z-20 object-cover" />
+      <div className="absolute inset-0 -z-10 bg-kw-secondary/10" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-linear-to-t from-kw-secondary/80 to-transparent" />
+
+      <div className="mx-auto w-full max-w-6xl px-6 py-24 text-center lg:px-8">
+        <h1 className="font-heading text-5xl leading-[1.02] font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl">
+          Encuentra la casa de <span className="block text-kw-primary">tus sueños</span>
+        </h1>
+        <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-white/75 sm:text-xl lg:text-2xl">
+          El camino a tu nuevo hogar empieza aquí con los expertos.
+        </p>
+
+        <form action="/propiedades" method="get" className="mx-auto mt-10 flex max-w-5xl flex-col gap-3 rounded-3xl bg-kw-secondary/90 p-3 shadow-2xl shadow-black/25 backdrop-blur-md sm:flex-row sm:items-center sm:rounded-full" role="search">
+          <label htmlFor="hero-property-search" className="sr-only">Buscar propiedades por ubicación</label>
+          <div className="flex min-w-0 flex-1 items-center gap-3 px-3 sm:px-4">
+            <Search className="shrink-0 text-white/60" size={26} aria-hidden="true" />
+            <input id="hero-property-search" name="ubicacion" type="search" required autoComplete="street-address" placeholder="Busca por calle, colonia, municipio o estado..." className="min-w-0 flex-1 bg-transparent py-4 text-base text-white outline-none placeholder:text-white/55 sm:text-lg" />
+          </div>
+          <button type="submit" className="shrink-0 rounded-full bg-kw-primary px-9 py-4 text-base font-bold text-white transition hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-12">
+            Buscar
+          </button>
+        </form>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 h-1 bg-kw-primary" />
+    </section>
+  );
 }

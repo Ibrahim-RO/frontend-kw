@@ -61,7 +61,7 @@ export default function AgentsSection() {
                     ))}
                 </select>
 
-                <label className="flex h-14 min-w-0 flex-1 items-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 transition-colors focus-within:border-kw-primary focus-within:ring-2 focus-within:ring-kw-primary/20">
+                <label className="flex h-16 min-w-0 flex-1 items-center gap-3 rounded-xl border border-neutral-300 bg-white px-4 transition-colors focus-within:border-kw-primary focus-within:ring-2 focus-within:ring-kw-primary/20 md:h-14">
                     <Search className="shrink-0 text-neutral-600" size={22} aria-hidden="true" />
                     <span className="sr-only">Buscar agente por nombre</span>
                     <input
@@ -69,7 +69,7 @@ export default function AgentsSection() {
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                         placeholder="Buscar agente por nombre..."
-                        className="h-full w-full bg-transparent text-neutral-900 outline-none placeholder:text-neutral-500"
+                        className="h-full min-h-0 w-full appearance-none bg-transparent py-4 text-base leading-6 text-neutral-900 outline-none placeholder:text-neutral-500 md:py-3"
                     />
                 </label>
 

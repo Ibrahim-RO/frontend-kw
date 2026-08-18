@@ -139,3 +139,11 @@
     @apply font-sans;
     }
 }
+
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+* {
+  scroll-behavior: smooth;
+}
