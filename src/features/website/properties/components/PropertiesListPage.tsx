@@ -206,6 +206,7 @@ export function PropertiesListPage({ initialLocation = '', initialBounds = null 
                   flyTo={flyTo}
                   polygonActive={mode === 'polygon'}
                   onClearPolygon={handleClearPolygon}
+                  initialBounds={initialBounds}
                 />
               </div>
             </div>

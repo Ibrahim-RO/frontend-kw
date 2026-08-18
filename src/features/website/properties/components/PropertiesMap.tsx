@@ -37,18 +37,19 @@ function BoundsWatcher({ onBoundsChange }: { onBoundsChange: (bounds: MapBounds)
   return null
 }
 
+function toLeafletBounds(bounds: MapBounds): L.LatLngBoundsExpression {
+  return [
+    [bounds.BottomRigth_Latitude, bounds.TopLeft_Longitude],
+    [bounds.TopLeft_Latitude, bounds.BottomRigth_Longitude],
+  ]
+}
+
 function FlyToController({ target }: { target: MapBounds | null }) {
   const map = useMap()
 
   useEffect(() => {
     if (!target) return
-    map.flyToBounds(
-      [
-        [target.BottomRigth_Latitude, target.TopLeft_Longitude],
-        [target.TopLeft_Latitude, target.BottomRigth_Longitude],
-      ],
-      { duration: 1.2 },
-    )
+    map.flyToBounds(toLeafletBounds(target), { duration: 1.2 })
   }, [target, map])
 
   return null
@@ -73,6 +74,7 @@ function FreehandDrawControl({
   const previewRef = useRef<L.Polyline | null>(null)
   const pointsRef = useRef<L.LatLng[]>([])
   const drawingRef = useRef(false)
+  const activePointerIdRef = useRef<number | null>(null)
   const onPolygonCompleteRef = useRef(onPolygonComplete)
   onPolygonCompleteRef.current = onPolygonComplete
   const onDrawEndRef = useRef(onDrawEnd)
@@ -103,29 +105,14 @@ function FreehandDrawControl({
     // texto nativa (se ve azul, como si fueras a copiar) y el mouseup deja
     // de llegarle al mapa, dejando el trazo pegado sin poder cerrarlo.
     container.style.userSelect = 'none'
+    // Sin esto en móvil el navegador interpreta el arrastre como scroll/zoom
+    // de la página y el gesto de dibujo nunca llega a los listeners de abajo.
+    container.style.touchAction = 'none'
 
-    const handleDown = (event: MouseEvent) => {
-      event.preventDefault()
-      drawingRef.current = true
-      const latlng = map.mouseEventToLatLng(event)
-      pointsRef.current = [latlng]
-      previewRef.current = L.polyline([latlng], { color: '#B40101', weight: 3 }).addTo(map)
-    }
-
-    const handleMove = (event: MouseEvent) => {
-      if (!drawingRef.current || !previewRef.current) return
-      const latlng = map.mouseEventToLatLng(event)
-      const lastPoint = pointsRef.current[pointsRef.current.length - 1]
-      const lastPixel = map.latLngToContainerPoint(lastPoint)
-      const currentPixel = map.latLngToContainerPoint(latlng)
-      if (lastPixel.distanceTo(currentPixel) < SAMPLE_DISTANCE_PX) return
-      pointsRef.current.push(latlng)
-      previewRef.current.setLatLngs(pointsRef.current)
-    }
-
-    const handleUp = () => {
+    const finishStroke = () => {
       if (!drawingRef.current) return
       drawingRef.current = false
+      activePointerIdRef.current = null
 
       if (previewRef.current) {
         map.removeLayer(previewRef.current)
@@ -143,27 +130,61 @@ function FreehandDrawControl({
       onDrawEndRef.current()
     }
 
-    // mousedown se queda en el contenedor del mapa (solo empieza a dibujar
-    // si el clic fue sobre el mapa), pero move/up van en document: así el
-    // trazo se sigue actualizando y sobre todo se cierra bien aunque el
-    // mouse salga del mapa o se suelte fuera de él.
-    container.addEventListener('mousedown', handleDown)
-    document.addEventListener('mousemove', handleMove)
-    document.addEventListener('mouseup', handleUp)
+    // Pointer Events en vez de mouse-only: así el mismo código dibuja con
+    // mouse, touch (celular/tablet) o pluma sin duplicar lógica.
+    const handleDown = (event: PointerEvent) => {
+      if (drawingRef.current) return
+      event.preventDefault()
+      drawingRef.current = true
+      activePointerIdRef.current = event.pointerId
+      const latlng = map.mouseEventToLatLng(event)
+      pointsRef.current = [latlng]
+      previewRef.current = L.polyline([latlng], { color: '#B40101', weight: 3 }).addTo(map)
+    }
+
+    const handleMove = (event: PointerEvent) => {
+      if (!drawingRef.current || !previewRef.current) return
+      if (event.pointerId !== activePointerIdRef.current) return
+      const latlng = map.mouseEventToLatLng(event)
+      const lastPoint = pointsRef.current[pointsRef.current.length - 1]
+      const lastPixel = map.latLngToContainerPoint(lastPoint)
+      const currentPixel = map.latLngToContainerPoint(latlng)
+      if (lastPixel.distanceTo(currentPixel) < SAMPLE_DISTANCE_PX) return
+      pointsRef.current.push(latlng)
+      previewRef.current.setLatLngs(pointsRef.current)
+    }
+
+    const handleUp = (event: PointerEvent) => {
+      if (event.pointerId !== activePointerIdRef.current) return
+      finishStroke()
+    }
+
+    // pointerdown se queda en el contenedor del mapa (solo empieza a dibujar
+    // si el gesto fue sobre el mapa), pero move/up/cancel van en document:
+    // así el trazo se sigue actualizando y sobre todo se cierra bien aunque
+    // el dedo o el mouse salga del mapa o se suelte fuera de él. pointercancel
+    // cubre cuando el sistema interrumpe el gesto (ej. una llamada entrante).
+    container.addEventListener('pointerdown', handleDown)
+    document.addEventListener('pointermove', handleMove)
+    document.addEventListener('pointerup', handleUp)
+    document.addEventListener('pointercancel', handleUp)
 
     return () => {
       map.dragging.enable()
       container.style.cursor = ''
       container.style.userSelect = ''
-      container.removeEventListener('mousedown', handleDown)
-      document.removeEventListener('mousemove', handleMove)
-      document.removeEventListener('mouseup', handleUp)
+      container.style.touchAction = ''
+      container.removeEventListener('pointerdown', handleDown)
+      document.removeEventListener('pointermove', handleMove)
+      document.removeEventListener('pointerup', handleUp)
+      document.removeEventListener('pointercancel', handleUp)
       if (previewRef.current) {
         map.removeLayer(previewRef.current)
         previewRef.current = null
       }
       drawingRef.current = false
       pointsRef.current = []
+      activePointerIdRef.current = null
     }
   }, [isArmed, map])
 
@@ -177,6 +198,9 @@ type PropertiesMapProps = {
   flyTo: MapBounds | null
   polygonActive: boolean
   onClearPolygon: () => void
+  // Solo para el montaje inicial del mapa (ver abajo) — a diferencia de
+  // flyTo, esto nunca cambia despues de montado.
+  initialBounds: MapBounds | null
 }
 
 export default function PropertiesMap({
@@ -186,12 +210,22 @@ export default function PropertiesMap({
   flyTo,
   polygonActive,
   onClearPolygon,
+  initialBounds,
 }: PropertiesMapProps) {
   const [isArmed, setIsArmed] = useState(false)
 
+  // Si ya sabemos el area correcta al montar (ej. vino de una direccion
+  // geocodificada), el mapa arranca ahi directo en vez de arrancar en el
+  // centro de Mexico y volar despues con FlyToController — ese vuelo
+  // disparaba un "moveend" con el viewport todavia mal puesto que pisaba
+  // el bounds correcto con uno vacio antes de que la animacion terminara.
+  const initProps = initialBounds
+    ? { bounds: toLeafletBounds(initialBounds) }
+    : { center: [23.6345, -102.5528] as [number, number], zoom: 5 }
+
   return (
     <div className="relative h-full w-full">
-      <MapContainer center={[23.6345, -102.5528]} zoom={5} scrollWheelZoom className="h-full w-full">
+      <MapContainer {...initProps} scrollWheelZoom className="h-full w-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
