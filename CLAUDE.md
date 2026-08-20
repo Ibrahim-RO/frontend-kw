@@ -44,7 +44,7 @@ Definida en `UI.jpeg` (raíz del proyecto `KW-MEXICO`, fuera de este repo):
 
 Cada uno tiene su propia escala de tintes/sombras (ver la imagen). El `--destructive`/`--sidebar-*` de `globals.css` deben alinearse a `Primary` (`#B40101`) — si se ajustan colores del tema, usar estos valores como fuente de verdad en vez de inventar otros.
 
-**Tipografía:** encabezados en **Montserrat**, cuerpo y labels en **Inter** (agregar Montserrat vía `next/font/google` igual que ya se hace con Inter en `app/layout.tsx`).
+**Tipografía:** la marca KW usa Helvetica Neue LT Std (cuerpo/texto de apoyo) y DIN Next LT Pro Heavy Condensed (titulares y diseños de patrones), pero ninguna de las dos está disponible como Google Font para web. Por eso el sitio usa las alternativas web que el cliente autorizó para ese caso: encabezados en **Rubik** (alternativa de DIN Next), cuerpo y labels en **Roboto** (alternativa de Helvetica cuando no está disponible en web). Ambas se cargan vía `next/font/google` en `app/layout.tsx` (`--font-heading` y `--font-sans` respectivamente). No uses Montserrat/Inter ni ninguna otra tipografía — sin excepciones.
 
 **Botones:** 4 variantes — Primary (relleno rojo), Secondary (relleno claro), Inverted (relleno oscuro), Outlined (solo borde).
 

@@ -36,7 +36,7 @@ export default function AgentsSection() {
     return (
         <div className="mx-auto w-full max-w-7xl space-y-6 p-5 py-10 md:px-0 md:py-8">
             <div className="flex flex-col items-center justify-center gap-1 space-y-3 text-center">
-                <h3 className="text-3xl font-bold md:text-4xl">Directorio de Agentes</h3>
+                <h3 className="font-heading text-3xl font-bold md:text-4xl">Directorio de Agentes</h3>
                 <p className="w-full max-w-3xl text-gray-600 md:text-lg">
                     Encuentra a tu asesor inmobiliario experto en KW. Nuestra red de profesionales está lista para ayudarte a encontrar el hogar de tus sueños.
                 </p>

@@ -111,7 +111,7 @@ export default function TermsOfUsePage() {
             <header className="border-b border-neutral-200 bg-neutral-950 text-white">
                 <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:px-8">
                     <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-red-500">Información legal</p>
-                    <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">Términos de uso</h1>
+                    <h1 className="max-w-3xl font-heading text-4xl font-bold tracking-tight sm:text-5xl">Términos de uso</h1>
                     <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg">Condiciones que regulan el acceso y uso de los servicios y contenidos de KW Worldwide.</p>
                 </div>
             </header>
@@ -119,7 +119,7 @@ export default function TermsOfUsePage() {
             <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[16rem_minmax(0,1fr)] lg:px-8 lg:py-16">
                 <aside className="lg:sticky lg:top-28 lg:self-start">
                     <nav aria-label="Índice de los términos de uso" className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
-                        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-neutral-950">Contenido</h2>
+                        <h2 className="mb-4 font-heading text-sm font-bold uppercase tracking-wider text-neutral-950">Contenido</h2>
                         <ol className="space-y-2 text-sm text-neutral-600">
                             {sections.map(({ id, title }, index) => (
                                 <li key={id}>
@@ -134,7 +134,7 @@ export default function TermsOfUsePage() {
                 </aside>
 
                 <article aria-labelledby="terms-title" className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
-                    <h2 id="terms-title" className="sr-only">Condiciones de uso del sitio web</h2>
+                    <h2 id="terms-title" className="sr-only font-heading">Condiciones de uso del sitio web</h2>
                     <div className="border-b border-neutral-200 bg-red-50/60 p-6 sm:p-8">
                         <p className="text-base leading-8 text-neutral-700">
                             El sitio web ubicado en <a href="https://www.kwworldwide.com" target="_blank" rel="noreferrer" className="font-semibold text-red-700 underline decoration-red-300 underline-offset-4 hover:text-red-900">www.kwworldwide.com</a> (el “Sitio”) es propiedad y está operado por KW WORLDWIDE, LTD. (“KW WORLDWIDE”). Al acceder, usar e iniciar sesión en el Sitio, reconoces expresamente que has leído y entendido estos Términos de Uso y aceptas estar sujeto a ellos.
@@ -146,7 +146,7 @@ export default function TermsOfUsePage() {
                             <section key={id} id={id} aria-labelledby={`${id}-title`} className="scroll-mt-28 py-9 sm:py-11">
                                 <div className="mb-5 flex items-start gap-4">
                                     <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-red-50 text-sm font-bold text-red-700">{index + 1}</span>
-                                    <h2 id={`${id}-title`} className="pt-1 text-xl font-bold tracking-tight text-neutral-950 sm:text-2xl">{title}</h2>
+                                    <h2 id={`${id}-title`} className="pt-1 font-heading text-xl font-bold tracking-tight text-neutral-950 sm:text-2xl">{title}</h2>
                                 </div>
                                 <div className="space-y-4 text-base leading-8 text-neutral-600">{content}</div>
                             </section>

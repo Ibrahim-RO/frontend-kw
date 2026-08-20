@@ -8,7 +8,7 @@ export default function ProspectingCtaSection() {
       <div className="absolute left-1/2 top-1/3 -z-10 size-72 -translate-x-1/2 rounded-full bg-kw-primary/10 blur-3xl sm:size-[30rem]" aria-hidden="true" />
       <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
         <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-kw-primary">Tu siguiente oportunidad comienza aquí</p>
-        <h2 id="prospecting-title" className="sr-only">¿Listo para prosperar?</h2>
+        <h2 id="prospecting-title" className="sr-only font-heading">¿Listo para prosperar?</h2>
         <div className="relative mx-auto mt-5 flex min-h-64 max-w-2xl items-center justify-center sm:min-h-80" aria-hidden="true">
           <div className="absolute inset-x-8 inset-y-4 rounded-[50%] bg-kw-secondary shadow-2xl shadow-kw-primary/20 sm:inset-x-12" />
           <div className="absolute inset-16 rounded-full bg-kw-primary/35 blur-3xl" />

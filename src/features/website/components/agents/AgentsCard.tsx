@@ -24,7 +24,7 @@ export default function AgentsCard({ agentData }: Props) {
                 </div>
             )}
             <div className="text-center space-y-1">
-                <p className="font-bold">{agentData.First_Name} {agentData.Last_Name}</p>
+                <p className="font-heading font-bold">{agentData.First_Name} {agentData.Last_Name}</p>
                 <p className="text-sm text-[#CE011F]">{agentData.Market_Center}</p>
             </div>
             <div className="grid w-full grid-cols-2 gap-2">

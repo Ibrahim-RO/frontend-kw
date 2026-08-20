@@ -18,7 +18,7 @@ export function BlogEditPage({ id }: { id: string }) {
           <ArrowLeft className="size-4" />
           Volver al blog
         </Link>
-        <h1 className="mt-2 text-xl font-semibold text-foreground">Editar entrada</h1>
+        <h1 className="mt-2 font-heading text-xl font-semibold text-foreground">Editar entrada</h1>
       </div>
 
       {isLoading && <p className="text-sm text-muted-foreground">Cargando entrada...</p>}

@@ -1,22 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Montserrat } from "next/font/google";
+import { Rubik, Roboto } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/src/shared/components/sonner";
 import ProviderReactQuery from "@/src/shared/components/ProviderReactQuery";
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// Roboto = alternativa web de Helvetica Neue LT Std (cuerpo/texto de apoyo).
+// Rubik = alternativa web de DIN Next LT Pro Heavy Condensed (titulares).
+// Ambas indicadas por el cliente como fuentes seguras para web cuando las
+// tipografías de marca no están disponibles como Google Fonts.
+const roboto = Roboto({ subsets: ['latin'], variable: '--font-sans' });
+const rubik = Rubik({ subsets: ['latin'], variable: '--font-heading' });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,11 +21,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable, montserrat.variable)}
+      className={cn("h-full", "antialiased", "font-sans", roboto.variable, rubik.variable)}
     >
       <body className="min-h-full flex flex-col">
         <ProviderReactQuery>
-          {children}          
+          {children}
         </ProviderReactQuery>
       </body>
     </html>

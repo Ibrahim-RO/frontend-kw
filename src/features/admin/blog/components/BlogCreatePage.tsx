@@ -15,7 +15,7 @@ export function BlogCreatePage() {
           <ArrowLeft className="size-4" />
           Volver al blog
         </Link>
-        <h1 className="mt-2 text-xl font-semibold text-foreground">Nueva entrada de blog</h1>
+        <h1 className="mt-2 font-heading text-xl font-semibold text-foreground">Nueva entrada de blog</h1>
       </div>
 
       <BlogForm mode="create" />

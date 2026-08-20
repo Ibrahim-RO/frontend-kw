@@ -9,7 +9,7 @@ export function BlogListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Blog</h1>
+          <h1 className="font-heading text-xl font-semibold text-foreground">Blog</h1>
           <p className="text-sm text-muted-foreground">Administra las entradas del blog.</p>
         </div>
         <Link

@@ -103,7 +103,7 @@ export default function PrivacyNoticePage() {
                     <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-red-500">
                         Protección de datos
                     </p>
-                    <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
+                    <h1 className="max-w-3xl font-heading text-4xl font-bold tracking-tight sm:text-5xl">
                         Aviso de privacidad
                     </h1>
                     <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg">
@@ -118,7 +118,7 @@ export default function PrivacyNoticePage() {
                         aria-label="Índice del aviso de privacidad"
                         className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm"
                     >
-                        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-neutral-950">
+                        <h2 className="mb-4 font-heading text-sm font-bold uppercase tracking-wider text-neutral-950">
                             Contenido
                         </h2>
                         <ol className="space-y-2 text-sm text-neutral-600">
@@ -143,7 +143,7 @@ export default function PrivacyNoticePage() {
                     aria-labelledby="privacy-notice-title"
                     className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm"
                 >
-                    <h2 id="privacy-notice-title" className="sr-only">
+                    <h2 id="privacy-notice-title" className="sr-only font-heading">
                         Aviso sobre el tratamiento de datos personales
                     </h2>
 
@@ -170,7 +170,7 @@ export default function PrivacyNoticePage() {
                                     </span>
                                     <h2
                                         id={`${id}-title`}
-                                        className="pt-1 text-xl font-bold tracking-tight text-neutral-950 sm:text-2xl"
+                                        className="pt-1 font-heading text-xl font-bold tracking-tight text-neutral-950 sm:text-2xl"
                                     >
                                         {title}
                                     </h2>

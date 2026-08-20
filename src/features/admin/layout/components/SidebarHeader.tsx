@@ -8,7 +8,7 @@ export function SidebarHeader({ onClose }: SidebarHeaderProps) {
   return (
     <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-5 lg:h-20">
       <div className="flex flex-col justify-center">
-        <span className="text-lg font-bold tracking-tight text-sidebar-accent-foreground">
+        <span className="font-heading text-lg font-bold tracking-tight text-sidebar-accent-foreground">
           KW México
         </span>
         <span className="text-xs font-medium text-sidebar-foreground/60">

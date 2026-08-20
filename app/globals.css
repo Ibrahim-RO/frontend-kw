@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-montserrat);
+    --font-heading: var(--font-heading);
     --font-sans: var(--font-sans);
     --color-kw-primary: var(--kw-primary);
     --color-kw-primary-foreground: var(--kw-primary-foreground);

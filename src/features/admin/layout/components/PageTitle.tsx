@@ -3,5 +3,5 @@ type PageTitleProps = {
 }
 
 export function PageTitle({ title }: PageTitleProps) {
-  return <h1 className="truncate text-lg font-semibold text-foreground lg:text-xl">{title}</h1>
+  return <h1 className="truncate font-heading text-lg font-semibold text-foreground lg:text-xl">{title}</h1>
 }

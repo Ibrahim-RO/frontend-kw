@@ -18,7 +18,7 @@ export default function Page() {
 
         <div className="relative z-10 flex w-full flex-col justify-between px-12 py-10 text-white xl:px-16 xl:py-12">
           <div>
-            <p className="text-2xl font-bold tracking-tight">KW México</p>
+            <p className="font-heading text-2xl font-bold tracking-tight">KW México</p>
             <p className="mt-1 text-sm font-semibold text-white/90">Admin Console</p>
           </div>
 
@@ -45,11 +45,11 @@ export default function Page() {
       <section className="flex min-h-screen items-center justify-center px-6 py-12 sm:px-10 lg:px-16">
         <div className="w-full max-w-md">
           <div className="mb-10 lg:hidden">
-            <p className="text-2xl font-bold tracking-tight text-[#173f5c]">KW México</p>
+            <p className="font-heading text-2xl font-bold tracking-tight text-[#173f5c]">KW México</p>
             <p className="mt-1 text-sm font-semibold text-slate-500">Admin Console</p>
           </div>
 
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-950">Iniciar sesión</h1>
+          <h1 className="font-heading text-3xl font-semibold tracking-tight text-slate-950">Iniciar sesión</h1>
           <p className="mt-2 text-sm leading-6 text-slate-500">
             Ingresa tus credenciales para acceder al panel de administración.
           </p>
