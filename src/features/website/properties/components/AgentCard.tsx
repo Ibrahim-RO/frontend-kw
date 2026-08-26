@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Mail, Phone, User } from 'lucide-react'
 import type { PropertyAgent } from '../types'
 import { getAgentFullName } from '../lib/format'
@@ -7,20 +8,26 @@ export function AgentCard({ agent }: { agent: PropertyAgent }) {
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-7 text-center">
-      {agent.Agent_Photo_url ? (
-        <img
-          src={agent.Agent_Photo_url}
-          alt={fullName}
-          className="mx-auto mb-4 h-16 w-16 rounded-full object-cover"
-        />
-      ) : (
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-200 text-neutral-400">
-          <User size={26} />
-        </div>
-      )}
+      <Link href={`/agentes/${agent.ID}`} className="group block">
+        {agent.Agent_Photo_url ? (
+          <img
+            src={agent.Agent_Photo_url}
+            alt={fullName}
+            className="mx-auto mb-4 h-16 w-16 rounded-full object-cover transition-opacity group-hover:opacity-80"
+          />
+        ) : (
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-200 text-neutral-400 transition-opacity group-hover:opacity-80">
+            <User size={26} />
+          </div>
+        )}
 
-      <h4 className="mb-0.5 font-heading text-base font-extrabold text-kw-secondary">{fullName}</h4>
-      <p className="mb-3.5 text-xs font-extrabold tracking-wide text-kw-primary uppercase">KW México</p>
+        <h4 className="mb-0.5 font-heading text-base font-extrabold text-kw-secondary group-hover:text-kw-primary">
+          {fullName}
+        </h4>
+      </Link>
+      <p className="mb-3.5 text-xs font-extrabold tracking-wide text-kw-primary uppercase">
+        {agent.Market_Center ?? 'KW México'}
+      </p>
 
       {agent.City && <p className="mb-2 text-sm text-kw-tertiary capitalize">{agent.City}</p>}
 

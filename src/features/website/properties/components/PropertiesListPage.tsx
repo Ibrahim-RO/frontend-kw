@@ -10,6 +10,7 @@ import { usePolygonSearch, MAX_POLYGON_PROPERTIES } from '../hooks/usePolygonSea
 import { PropertyFilters } from './PropertyFilters'
 import { PropertiesGrid } from './PropertiesGrid'
 import { Pagination } from './Pagination'
+import { LocationAutocompleteBar } from './LocationAutocompleteBar'
 import { getTotalPages, getPageSlice, PAGE_SIZE } from '../lib/pagination'
 import { geocodeAddress } from '../api/geocode.client'
 import { boundsFromGeocodeResult } from '../lib/geocode-bounds'
@@ -169,14 +170,28 @@ export function PropertiesListPage({ initialLocation = '', initialBounds = null 
         Propiedades Destacadas
       </h1>
 
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <aside className="w-full lg:w-64 lg:shrink-0">
+      <LocationAutocompleteBar
+        size="sm"
+        className="mb-8"
+        onSelectResult={(result) => {
+          const nextBounds = boundsFromGeocodeResult(result)
+          setBounds(nextBounds)
+          setFlyTo(nextBounds)
+          setPolygon(null)
+          setFilters(emptyFilters)
+          setPage(1)
+        }}
+        onSubmitText={(text) => handleSearch({ ...emptyFilters, Filter_Calle: text })}
+      />
+
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+        <div className="order-2 w-full lg:order-1 lg:w-64 lg:shrink-0">
           <div className="lg:sticky lg:top-28">
             <PropertyFilters onSearch={handleSearch} onClear={handleClear} />
           </div>
-        </aside>
+        </div>
 
-        <div className="min-w-0 flex-1">
+        <div className="@container order-3 min-w-0 lg:order-2 lg:flex-[3]">
           <p className="mb-5 text-sm font-semibold text-kw-tertiary">
             {isLoading
               ? 'Buscando propiedades...'
@@ -191,25 +206,21 @@ export function PropertiesListPage({ initialLocation = '', initialBounds = null 
             </p>
           )}
 
-          <div className="relative flex flex-col gap-8 xl:flex-row">
-            <div className="@container w-full xl:w-3/5">
-              <PropertiesGrid properties={properties} isLoading={isLoading} isError={isError} />
-              <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
-            </div>
+          <PropertiesGrid properties={properties} isLoading={isLoading} isError={isError} />
+          <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+        </div>
 
-            <div className="z-10 w-full xl:w-2/5">
-              <div className="sticky top-28 h-[calc(100vh-10rem)] overflow-hidden rounded-3xl border border-neutral-200 shadow-xl">
-                <PropertiesMap
-                  properties={properties}
-                  onBoundsChange={setBounds}
-                  onPolygonComplete={handlePolygonComplete}
-                  flyTo={flyTo}
-                  polygonActive={mode === 'polygon'}
-                  onClearPolygon={handleClearPolygon}
-                  initialBounds={initialBounds}
-                />
-              </div>
-            </div>
+        <div className="order-1 w-full lg:order-3 lg:flex-[2]">
+          <div className="relative z-10 h-72 overflow-hidden rounded-3xl border border-neutral-200 shadow-xl sm:h-80 lg:sticky lg:top-28 lg:h-[calc(100vh-10rem)]">
+            <PropertiesMap
+              properties={properties}
+              onBoundsChange={setBounds}
+              onPolygonComplete={handlePolygonComplete}
+              flyTo={flyTo}
+              polygonActive={mode === 'polygon'}
+              onClearPolygon={handleClearPolygon}
+              initialBounds={initialBounds}
+            />
           </div>
         </div>
       </div>

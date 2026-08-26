@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2, MapPin } from 'lucide-react'
 import { useProperty } from '../hooks/useProperty'
 import { PropertyGallery } from './PropertyGallery'
 import { AgentCard } from './AgentCard'
+import { PropertyPdfButton } from './PropertyPdfButton'
 import { formatPrice } from '../lib/format'
 
 const PropertyLocationMap = dynamic(() => import('./PropertyLocationMap'), {
@@ -141,6 +142,7 @@ export function PropertyDetailPage({ id }: { id: string }) {
               >
                 Contáctame
               </a>
+              <PropertyPdfButton property={property} heroPhoto={heroPhoto ?? null} defaultAgent={agent ?? null} />
             </div>
           </div>
 
