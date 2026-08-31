@@ -5,5 +5,6 @@ import FormSubmit from './FormSubmit'
 import FormError from './FormError'
 import FormTextArea from './FormTextArea'
 import FormField from './FormField'
+import FormSelect from './FormSelect'
 
-export { Form, FormInput, FormLabel, FormSubmit, FormError, FormTextArea, FormField }
+export { Form, FormInput, FormLabel, FormSubmit, FormError, FormTextArea, FormField, FormSelect }

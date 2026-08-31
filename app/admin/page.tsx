@@ -5,16 +5,16 @@ const heroImage = '/image-login.webp';
 
 export default function Page() {
   return (
-    <main className="grid min-h-screen bg-[#f7f9fc] lg:grid-cols-[minmax(420px,1.03fr)_minmax(520px,0.97fr)]">
+    <main className="grid min-h-screen bg-background lg:grid-cols-[minmax(420px,1.03fr)_minmax(520px,0.97fr)]">
       <section
-        className="relative hidden min-h-screen overflow-hidden bg-[#173f5c] lg:flex"
+        className="relative hidden min-h-screen overflow-hidden bg-kw-secondary lg:flex"
         aria-label="Keller Williams México"
       >
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url('${heroImage}')` }}
         />
-        <div className="absolute inset-0 bg-linear-to-b from-[#0b466a]/95 via-[#0b3a58]/55 to-[#071d2d]/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-kw-secondary/95 via-kw-secondary/60 to-black/90" />
 
         <div className="relative z-10 flex w-full flex-col justify-between px-12 py-10 text-white xl:px-16 xl:py-12">
           <div>
@@ -45,12 +45,12 @@ export default function Page() {
       <section className="flex min-h-screen items-center justify-center px-6 py-12 sm:px-10 lg:px-16">
         <div className="w-full max-w-md">
           <div className="mb-10 lg:hidden">
-            <p className="font-heading text-2xl font-bold tracking-tight text-[#173f5c]">KW México</p>
-            <p className="mt-1 text-sm font-semibold text-slate-500">Admin Console</p>
+            <p className="font-heading text-2xl font-bold tracking-tight text-kw-secondary">KW México</p>
+            <p className="mt-1 text-sm font-semibold text-muted-foreground">Admin Console</p>
           </div>
 
-          <h1 className="font-heading text-3xl font-semibold tracking-tight text-slate-950">Iniciar sesión</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">Iniciar sesión</h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Ingresa tus credenciales para acceder al panel de administración.
           </p>
 
@@ -58,17 +58,17 @@ export default function Page() {
             <LoginForm />
           </div>
 
-          <div className="my-9 h-px bg-slate-200" />
+          <div className="my-9 h-px bg-border" />
 
           <div className="text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-700"
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <span aria-hidden="true">←</span>
               Volver al sitio corporativo
             </Link>
-            <p className="mt-14 text-xs text-slate-400">
+            <p className="mt-14 text-xs text-muted-foreground">
               © {new Date().getFullYear()} KW México. Acceso exclusivo para administradores.
             </p>
           </div>

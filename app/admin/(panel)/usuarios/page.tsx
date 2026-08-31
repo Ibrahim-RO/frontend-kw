@@ -1,7 +1,5 @@
-import React from 'react'
+import { UsersListPage } from '@/src/features/admin/users/components/UsersListPage'
 
-export default function page() {
-  return (
-    <div>Usuarios</div>
-  )
+export default function Page() {
+  return <UsersListPage />
 }

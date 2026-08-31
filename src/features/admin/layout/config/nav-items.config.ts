@@ -14,11 +14,12 @@ export type AdminNavItem = {
   label: string
   href: string
   icon: LucideIcon
+  adminOnly?: boolean
 }
 
 export const adminNavItems: AdminNavItem[] = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { label: 'Usuarios', href: '/admin/usuarios', icon: Users },
+  { label: 'Usuarios', href: '/admin/usuarios', icon: Users, adminOnly: true },
   { label: 'Propiedades', href: '/admin/propiedades', icon: Building2 },
   { label: 'Blog', href: '/admin/blog', icon: Newspaper },
   { label: 'Marketing', href: '/admin/marketing', icon: Megaphone },

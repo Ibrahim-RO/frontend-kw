@@ -47,11 +47,11 @@ export default function LoginForm() {
       onSubmit={handleSubmit(onSubmit)}
     >
       <FormField>
-        <label htmlFor="email" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-600">
+        <label htmlFor="email" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Correo electrónico
         </label>
         <div className="relative">
-          <svg className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <svg className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <rect x="3" y="5" width="18" height="14" rx="2" />
             <path d="m4 7 8 6 8-6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -69,15 +69,15 @@ export default function LoginForm() {
 
       <FormField>
         <div className="mb-2 flex items-center justify-between gap-4">
-          <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+          <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Contraseña
           </label>
-          {/* <Link href="/" className="text-xs font-semibold text-[#b40101] hover:underline">
+          {/* <Link href="/" className="text-xs font-semibold text-primary hover:underline">
             ¿Olvidaste tu contraseña?
           </Link> */}
         </div>
         <div className="relative">
-          <svg className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <svg className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <rect x="5" y="10" width="14" height="11" rx="2" />
             <path d="M8 10V7a4 4 0 0 1 8 0v3" strokeLinecap="round" />
           </svg>
@@ -93,7 +93,7 @@ export default function LoginForm() {
         {errors.password && <FormError>{errors.password.message}</FormError>}
       </FormField>
 
-      <FormSubmit className="bg-red-700 text-white hover:bg-red-800 focus-visible:outline-red-800">
+      <FormSubmit className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:outline-primary">
         Iniciar sesión
         <span aria-hidden="true">→</span>
       </FormSubmit>
