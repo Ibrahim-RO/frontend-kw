@@ -1,30 +1,38 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { searchProperties } from '@/src/features/website/properties/api/properties.client'
 import { boundsAroundPoint } from '@/src/features/website/properties/lib/geocode-bounds'
 import { pickRandom } from '@/src/features/website/properties/lib/random'
-import { PropertyCard } from '@/src/features/website/properties/components/PropertyCard'
 import { emptyFilters, type Property } from '@/src/features/website/properties/types'
 import type { HomepageSection } from '@/src/features/admin/homepage/types'
+import { NearbyPropertyCard } from './NearbyPropertyCard'
 
 // Radios crecientes (km): si el radio chico no tiene nada cerca, probamos
 // uno mas grande antes de rendirnos, para no dejar sin contenido a alguien
 // en una zona con poca cobertura.
 const RADIUS_STEPS_KM = [20, 75, 250]
-const FEATURED_COUNT = 4
+const FEATURED_COUNT = 12
+const SCROLL_STEP_PX = 220
+
+type Status = 'idle' | 'locating' | 'ready' | 'unavailable'
 
 export default function FeaturedPropertiesSection({ content }: { content?: HomepageSection }) {
-  const data = content?.data
+  const [status, setStatus] = useState<Status>('idle')
   const [properties, setProperties] = useState<Property[]>([])
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!('geolocation' in navigator)) {
+      setStatus('unavailable')
       return
     }
 
     let cancelled = false
+    setStatus('locating')
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords
@@ -38,6 +46,7 @@ export default function FeaturedPropertiesSection({ content }: { content?: Homep
             if (found.length > 0) {
               if (!cancelled) {
                 setProperties(pickRandom(found, FEATURED_COUNT))
+                setStatus('ready')
               }
               return
             }
@@ -46,8 +55,11 @@ export default function FeaturedPropertiesSection({ content }: { content?: Homep
           }
         }
 
+        if (!cancelled) setStatus('unavailable')
       },
-      () => undefined,
+      () => {
+        if (!cancelled) setStatus('unavailable')
+      },
       { timeout: 8000, maximumAge: 5 * 60 * 1000 },
     )
 
@@ -56,33 +68,52 @@ export default function FeaturedPropertiesSection({ content }: { content?: Homep
     }
   }, [])
 
-  if (properties.length === 0) return null
+  const scrollByStep = (direction: 1 | -1) => {
+    scrollRef.current?.scrollBy({ left: direction * SCROLL_STEP_PX, behavior: 'smooth' })
+  }
+
+  if (status !== 'ready') return null
 
   return (
-    <section className="bg-neutral-50 py-20 sm:py-24 lg:py-28" aria-labelledby="featured-properties-title">
+    <section className="bg-white py-10 sm:py-12" aria-labelledby="featured-properties-title">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2
-              id="featured-properties-title"
-              className="font-heading text-4xl font-extrabold tracking-tight text-kw-secondary sm:text-5xl"
-            >
-              {String(data?.title || 'Propiedades')} <span className="text-kw-primary">{String(data?.titleAccent || 'destacadas')}</span>
-            </h2>
-            <p className="mt-3 text-lg text-kw-tertiary">{content?.subtitle || 'Seleccionadas para ti cerca de tu ubicación.'}</p>
-          </div>
-          <Link
-            href={String(data?.buttonUrl || '/propiedades')}
-            className="shrink-0 text-sm font-bold tracking-wide text-kw-primary uppercase hover:text-kw-secondary"
+        <h2 id="featured-properties-title" className="mb-5 font-heading text-lg font-bold text-kw-secondary sm:text-xl">
+          {content?.title || 'Propiedades cerca de ti'}
+        </h2>
+
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => scrollByStep(-1)}
+            className="absolute top-1/2 left-0 z-10 hidden size-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-kw-primary bg-white text-kw-primary shadow-md transition-colors hover:bg-kw-primary hover:text-white sm:flex"
+            aria-label="Ver propiedades anteriores"
           >
-            {String(data?.buttonLabel || 'Ver todas las propiedades →')}
-          </Link>
+            <ChevronLeft size={20} />
+          </button>
+
+          <div
+            ref={scrollRef}
+            className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {properties.map((property) => (
+              <NearbyPropertyCard key={property.ID} property={property} />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => scrollByStep(1)}
+            className="absolute top-1/2 right-0 z-10 hidden size-10 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-kw-primary bg-white text-kw-primary shadow-md transition-colors hover:bg-kw-primary hover:text-white sm:flex"
+            aria-label="Ver más propiedades"
+          >
+            <ChevronRight size={20} />
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {properties.map((property) => (
-            <PropertyCard key={property.ID} property={property} />
-          ))}
+        <div className="mt-4 text-right">
+          <Link href={content?.buttonUrl || '/propiedades'} className="text-sm font-bold text-kw-primary hover:text-kw-secondary">
+            {content?.buttonLabel || 'Ver más...'}
+          </Link>
         </div>
       </div>
     </section>
