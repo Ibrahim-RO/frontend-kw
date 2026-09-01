@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from 'react';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Navigation, Search } from 'lucide-react';
 import { AGENTS_PAGE_SIZE, useAgents } from '../../properties/hooks/useAgents';
 import { useMarketCenters } from '../../properties/hooks/useMarketCenters';
+import { useNearestMarketCenter } from '../../properties/hooks/useNearestMarketCenter';
 import { Pagination } from '../../properties/components/Pagination';
 import AgentsGrid from './AgentsGrid';
 
@@ -12,20 +13,39 @@ export default function AgentsSection() {
     const [marketCenterId, setMarketCenterId] = useState('');
     const [name, setName] = useState('');
     const [search, setSearch] = useState({ marketCenterId: '', name: '' });
+    // Mientras el usuario no toque el buscador, se prioriza el Market Center
+    // más cercano a su ubicación (en cuanto se detecte) sobre `search`. Es un
+    // valor derivado en cada render, no una copia sincronizada por efecto.
+    const [userInteracted, setUserInteracted] = useState(false);
+
+    const marketCentersQuery = useMarketCenters();
+    const { nearestMarketCenter, nearestDistanceKm } = useNearestMarketCenter(marketCentersQuery.data?.data ?? []);
+
+    const nearbyId = !userInteracted && nearestMarketCenter ? String(nearestMarketCenter.ID) : null;
+    const effectiveMarketCenterId = nearbyId ?? search.marketCenterId;
+
     const { data, isLoading, isError, isFetching } = useAgents(
         page,
-        search.marketCenterId || undefined,
+        effectiveMarketCenterId || undefined,
         search.name,
     );
-    const marketCentersQuery = useMarketCenters();
     const agents = data?.data.Agents_Data ?? [];
     const totalAgents = data?.data.Total_Agents ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalAgents / AGENTS_PAGE_SIZE));
 
     const handleSearch = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setUserInteracted(true);
         setPage(1);
         setSearch({ marketCenterId, name });
+    };
+
+    const handleShowAll = () => {
+        setUserInteracted(true);
+        setMarketCenterId('');
+        setName('');
+        setSearch({ marketCenterId: '', name: '' });
+        setPage(1);
     };
 
     const handlePageChange = (nextPage: number) => {
@@ -47,8 +67,11 @@ export default function AgentsSection() {
                 className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-4 shadow-md md:flex-row md:items-center md:p-3"
             >
                 <select
-                    value={marketCenterId}
-                    onChange={(event) => setMarketCenterId(event.target.value)}
+                    value={nearbyId ?? marketCenterId}
+                    onChange={(event) => {
+                        setUserInteracted(true);
+                        setMarketCenterId(event.target.value);
+                    }}
                     disabled={marketCentersQuery.isLoading}
                     className="h-14 rounded-xl border border-neutral-300 bg-neutral-100 px-4 font-semibold text-neutral-800 outline-none transition-colors hover:bg-neutral-50 focus:border-kw-primary focus:ring-2 focus:ring-kw-primary/20 disabled:opacity-60 md:w-64"
                     aria-label="Seleccionar oficina"
@@ -67,7 +90,10 @@ export default function AgentsSection() {
                     <input
                         type="search"
                         value={name}
-                        onChange={(event) => setName(event.target.value)}
+                        onChange={(event) => {
+                            setUserInteracted(true);
+                            setName(event.target.value);
+                        }}
                         placeholder="Buscar agente por nombre..."
                         className="h-full min-h-0 w-full appearance-none bg-transparent py-4 text-base leading-6 text-neutral-900 outline-none placeholder:text-neutral-500 md:py-3"
                     />
@@ -80,6 +106,23 @@ export default function AgentsSection() {
                     Buscar
                 </button>
             </form>
+
+            {nearbyId && nearestMarketCenter && (
+                <div className="flex flex-col items-center justify-between gap-3 rounded-xl border border-kw-primary/20 bg-kw-primary/5 px-4 py-3 text-sm text-kw-secondary sm:flex-row">
+                    <span className="flex items-center gap-2 text-center sm:text-left">
+                        <Navigation size={16} className="shrink-0 text-kw-primary" />
+                        Mostrando agentes de <strong>{nearestMarketCenter.Market_Center}</strong>, el Market Center más cercano a ti
+                        {nearestDistanceKm !== null && ` (a ${nearestDistanceKm < 10 ? nearestDistanceKm.toFixed(1) : Math.round(nearestDistanceKm)} km)`}.
+                    </span>
+                    <button
+                        type="button"
+                        onClick={handleShowAll}
+                        className="shrink-0 font-semibold text-kw-primary hover:underline"
+                    >
+                        Ver todos los agentes
+                    </button>
+                </div>
+            )}
 
             {isLoading && (
                 <div className="flex items-center justify-center py-24 text-kw-tertiary">
