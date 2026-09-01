@@ -6,6 +6,7 @@ import {
   Newspaper,
   Search,
   Settings,
+  PanelsTopLeft,
   Users,
   type LucideIcon,
 } from 'lucide-react'
@@ -21,6 +22,7 @@ export const adminNavItems: AdminNavItem[] = [
   { label: 'Usuarios', href: '/admin/usuarios', icon: Users },
   { label: 'Propiedades', href: '/admin/propiedades', icon: Building2 },
   { label: 'Blog', href: '/admin/blog', icon: Newspaper },
+  { label: 'Homepage', href: '/admin/homepage', icon: PanelsTopLeft },
   { label: 'Marketing', href: '/admin/marketing', icon: Megaphone },
   { label: 'SEO', href: '/admin/seo', icon: Search },
   { label: 'Configuración', href: '/admin/configuracion', icon: Settings },

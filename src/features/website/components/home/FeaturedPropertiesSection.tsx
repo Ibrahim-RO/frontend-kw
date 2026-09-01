@@ -7,6 +7,7 @@ import { boundsAroundPoint } from '@/src/features/website/properties/lib/geocode
 import { pickRandom } from '@/src/features/website/properties/lib/random'
 import { PropertyCard } from '@/src/features/website/properties/components/PropertyCard'
 import { emptyFilters, type Property } from '@/src/features/website/properties/types'
+import type { HomepageSection } from '@/src/features/admin/homepage/types'
 
 // Radios crecientes (km): si el radio chico no tiene nada cerca, probamos
 // uno mas grande antes de rendirnos, para no dejar sin contenido a alguien
@@ -14,21 +15,16 @@ import { emptyFilters, type Property } from '@/src/features/website/properties/t
 const RADIUS_STEPS_KM = [20, 75, 250]
 const FEATURED_COUNT = 4
 
-type Status = 'idle' | 'locating' | 'ready' | 'unavailable'
-
-export default function FeaturedPropertiesSection() {
-  const [status, setStatus] = useState<Status>('idle')
+export default function FeaturedPropertiesSection({ content }: { content?: HomepageSection }) {
+  const data = content?.data
   const [properties, setProperties] = useState<Property[]>([])
 
   useEffect(() => {
     if (!('geolocation' in navigator)) {
-      setStatus('unavailable')
       return
     }
 
     let cancelled = false
-    setStatus('locating')
-
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords
@@ -42,7 +38,6 @@ export default function FeaturedPropertiesSection() {
             if (found.length > 0) {
               if (!cancelled) {
                 setProperties(pickRandom(found, FEATURED_COUNT))
-                setStatus('ready')
               }
               return
             }
@@ -51,11 +46,8 @@ export default function FeaturedPropertiesSection() {
           }
         }
 
-        if (!cancelled) setStatus('unavailable')
       },
-      () => {
-        if (!cancelled) setStatus('unavailable')
-      },
+      () => undefined,
       { timeout: 8000, maximumAge: 5 * 60 * 1000 },
     )
 
@@ -64,7 +56,7 @@ export default function FeaturedPropertiesSection() {
     }
   }, [])
 
-  if (status !== 'ready') return null
+  if (properties.length === 0) return null
 
   return (
     <section className="bg-neutral-50 py-20 sm:py-24 lg:py-28" aria-labelledby="featured-properties-title">
@@ -75,15 +67,15 @@ export default function FeaturedPropertiesSection() {
               id="featured-properties-title"
               className="font-heading text-4xl font-extrabold tracking-tight text-kw-secondary sm:text-5xl"
             >
-              Propiedades <span className="text-kw-primary">destacadas</span>
+              {String(data?.title || 'Propiedades')} <span className="text-kw-primary">{String(data?.titleAccent || 'destacadas')}</span>
             </h2>
-            <p className="mt-3 text-lg text-kw-tertiary">Seleccionadas para ti cerca de tu ubicación.</p>
+            <p className="mt-3 text-lg text-kw-tertiary">{content?.subtitle || 'Seleccionadas para ti cerca de tu ubicación.'}</p>
           </div>
           <Link
-            href="/propiedades"
+            href={String(data?.buttonUrl || '/propiedades')}
             className="shrink-0 text-sm font-bold tracking-wide text-kw-primary uppercase hover:text-kw-secondary"
           >
-            Ver todas las propiedades →
+            {String(data?.buttonLabel || 'Ver todas las propiedades →')}
           </Link>
         </div>
 

@@ -1,7 +1,11 @@
 import { ArrowRight, Handshake, Users } from "lucide-react";
 import Image from "next/image";
+import type { HomepageSection } from "@/src/features/admin/homepage/types";
 
-export default function AlliesInfoSection() {
+export default function AlliesInfoSection({ content }: { content?: HomepageSection }) {
+  const data = content?.data
+  const paragraphs = Array.isArray(data?.paragraphs) ? data.paragraphs.map(String) : []
+  const secondParagraphs = Array.isArray(data?.secondParagraphs) ? data.secondParagraphs.map(String) : []
   return (
     <section className="bg-white py-20 sm:py-24 lg:py-28" aria-labelledby="allies-info-title">
       <div className="mx-auto max-w-7xl space-y-16 px-6 lg:space-y-24 lg:px-8">
@@ -11,28 +15,28 @@ export default function AlliesInfoSection() {
               <Users size={24} />
             </span>
             <h2 id="allies-info-title" className="mt-6 max-w-4xl font-heading text-3xl font-extrabold tracking-tight text-kw-secondary sm:text-4xl lg:text-5xl">
-              Conecta con la red inmobiliaria más grande de México
+              {String(data?.title || 'Conecta con la red inmobiliaria más grande de México')}
             </h2>
             <div className="mt-6 max-w-4xl space-y-4 text-base leading-7 text-kw-tertiary sm:text-lg sm:leading-8">
               <p>
-                KW México reúne a más de 2,000 agentes inmobiliarios activos distribuidos en Market Centers a lo largo del país. Al convertirte en aliado, tu marca llega directamente a profesionales con alto poder de decisión y a sus clientes: compradores, vendedores e inversionistas del mercado inmobiliario mexicano.
+                {paragraphs[0]}
               </p>
               <p>
-                Nuestros aliados tienen presencia en eventos nacionales como Family Reunion, en nuestras plataformas digitales y en la operación diaria de nuestra red.
+                {paragraphs[1]}
               </p>
             </div>
-            <p className="mt-6 font-heading text-lg font-bold text-kw-secondary">¿Tu marca quiere estar donde crece el sector inmobiliario?</p>
+            <p className="mt-6 font-heading text-lg font-bold text-kw-secondary">{String(data?.prompt || '')}</p>
           </div>
 
           <div className="relative overflow-hidden rounded-3xl bg-neutral-100 shadow-xl shadow-black/10">
-            <Image src="/Ally-description-1.png" alt="Comunidad reunida en un evento profesional" width={1200} height={1400} sizes="(min-width: 1024px) 34vw, 100vw" className="aspect-4/5 size-full object-cover" />
+            <Image src={String(data?.image1Url || "/Ally-description-1.png")} alt={String(data?.image1Alt || "Comunidad reunida en un evento profesional")} width={1200} height={1400} sizes="(min-width: 1024px) 34vw, 100vw" className="aspect-4/5 size-full object-cover" unoptimized={String(data?.image1Url || '').startsWith('http')} />
             <div className="absolute inset-x-0 bottom-0 h-1.5 bg-kw-primary" />
           </div>
         </article>
 
         <article className="grid overflow-hidden rounded-3xl border border-neutral-200 bg-neutral-50 lg:grid-cols-[0.72fr_1.28fr] lg:items-stretch">
           <div className="relative min-h-72 lg:min-h-112">
-            <Image src="/Ally-description-2.png" alt="Profesionales estrechando las manos para cerrar una alianza" fill sizes="(min-width: 1024px) 36vw, 100vw" className="object-cover" />
+            <Image src={String(data?.image2Url || "/Ally-description-2.png")} alt={String(data?.image2Alt || "Profesionales estrechando las manos para cerrar una alianza")} fill sizes="(min-width: 1024px) 36vw, 100vw" className="object-cover" unoptimized={String(data?.image2Url || '').startsWith('http')} />
             <div className="absolute inset-0 bg-linear-to-r from-kw-primary/20 to-transparent" />
           </div>
 
@@ -40,18 +44,18 @@ export default function AlliesInfoSection() {
             <span className="flex size-12 items-center justify-center rounded-xl bg-kw-primary text-white" aria-hidden="true">
               <Handshake size={24} />
             </span>
-            <h3 className="mt-6 font-heading text-3xl font-extrabold text-kw-secondary sm:text-4xl">Proveedores de servicios</h3>
-            <p className="mt-5 text-lg font-bold text-kw-secondary">Sé parte del ecosistema que impulsa a los agentes KW.</p>
+            <h3 className="mt-6 font-heading text-3xl font-extrabold text-kw-secondary sm:text-4xl">{String(data?.secondTitle || '')}</h3>
+            <p className="mt-5 text-lg font-bold text-kw-secondary">{String(data?.secondLead || '')}</p>
             <div className="mt-4 space-y-4 text-base leading-7 text-kw-tertiary">
               <p>
-                Los agentes KW México necesitan herramientas, servicios y soluciones confiables para operar y crecer su negocio. Si ofreces servicios financieros, legales, tecnológicos, de capacitación o bienestar, hay un lugar para ti en nuestra red.
+                {secondParagraphs[0]}
               </p>
               <p>
-                Como proveedor aliado, accedes a una comunidad profesional en constante crecimiento, con necesidades reales y ciclos de compra activos. Trabajamos con quienes comparten nuestro compromiso con la excelencia y el desarrollo del agente.
+                {secondParagraphs[1]}
               </p>
             </div>
-            <a href="mailto:info@kwmexico.mx?subject=Quiero%20ser%20proveedor%20aliado%20KW" className="mt-8 inline-flex items-center gap-2 rounded-md bg-kw-primary px-6 py-3.5 text-sm font-bold text-white transition hover:bg-red-800">
-              Hablemos <ArrowRight size={17} />
+            <a href={String(data?.buttonUrl || '#contact')} className="mt-8 inline-flex items-center gap-2 rounded-md bg-kw-primary px-6 py-3.5 text-sm font-bold text-white transition hover:bg-red-800">
+              {String(data?.buttonLabel || 'Hablemos')} <ArrowRight size={17} />
             </a>
           </div>
         </article>

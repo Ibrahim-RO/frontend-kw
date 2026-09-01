@@ -1,33 +1,19 @@
-import type { Metadata } from "next";
-import AboutSection from "@/src/features/website/components/home/AboutSection";
-import AlliesSection from "@/src/features/website/components/home/AlliesSection";
-import AlliesInfoSection from "@/src/features/website/components/home/AlliesInfoSection";
-import AwardsSection from "@/src/features/website/components/home/AwardsSection";
-import ContactSection from "@/src/features/website/components/home/ContactSection";
-import FamilyReunionSection from "@/src/features/website/components/home/FamilyReunionSection";
-import FeaturedPropertiesSection from "@/src/features/website/components/home/FeaturedPropertiesSection";
-import Hero from "@/src/features/website/components/home/Hero";
-import JoinSection from "@/src/features/website/components/home/JoinSection";
-import ProspectingCtaSection from "@/src/features/website/components/home/ProspectingCtaSection";
+import type { Metadata } from 'next'
+import { ManagedSection } from '@/src/features/website/components/home/ManagedSection'
+import { getPublishedHomepage } from '@/src/features/website/homepage'
 
-export const metadata: Metadata = {
-  title: "Keller Williams México | Bienes raíces y oportunidades",
-  description: "Encuentra propiedades, agentes inmobiliarios y oportunidades para crecer con la red Keller Williams México.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getPublishedHomepage()
+  return { title: seo.title, description: seo.description, alternates: seo.canonicalUrl ? { canonical: seo.canonicalUrl } : undefined, robots: seo.robots, openGraph: { title: seo.ogTitle || seo.title, description: seo.ogDescription || seo.description, images: seo.ogImage ? [seo.ogImage] : undefined } }
+}
 
-export default function Home() {
-  return (
-    <main>
-      <Hero />
-      <AwardsSection />
-      <FeaturedPropertiesSection />
-      <AboutSection />
-      <JoinSection />
-      <FamilyReunionSection />
-      <AlliesSection />
-      <AlliesInfoSection />
-      <ProspectingCtaSection />
-      <ContactSection />
-    </main>
-  );
+export default async function Home() {
+  const page = await getPublishedHomepage()
+  return <>
+    {page.integrations.headHtml && <head dangerouslySetInnerHTML={{ __html: page.integrations.headHtml }}/>} 
+    {page.seo.schemaJsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(page.seo.schemaJsonLd).replace(/</g, '\\u003c') }}/>} 
+    {page.integrations.bodyStartHtml && <div className="contents" dangerouslySetInnerHTML={{ __html: page.integrations.bodyStartHtml }}/>} 
+    <main>{page.sections.filter(s => s.visible).map((section,index) => <ManagedSection key={section.id} section={section} index={index}/>)}</main>
+    {page.integrations.bodyEndHtml && <div className="contents" dangerouslySetInnerHTML={{ __html: page.integrations.bodyEndHtml }}/>} 
+  </>
 }

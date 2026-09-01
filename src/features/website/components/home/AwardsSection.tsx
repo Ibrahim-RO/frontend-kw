@@ -1,5 +1,5 @@
-import { Award } from "lucide-react";
 import styles from "./AwardsSection.module.css";
+import type { HomepageSection } from "@/src/features/admin/homepage/types";
 
 const awards = [
   ["KW Worldwide", "#1 Growth Share", "A nivel mundial (2024)"],
@@ -12,12 +12,12 @@ const awards = [
   ["Premio al ícono inmobiliario", "Jorge Carbonell / CEO KW México", "2017"],
 ] as const;
 
-function AwardCards({ duplicate = false }: { duplicate?: boolean }) {
+function AwardCards({ duplicate = false, items = awards, iconUrl = '/award-icon.png' }: { duplicate?: boolean; items?: readonly (readonly [string,string,string])[]; iconUrl?: string }) {
   return (
     <div className={styles.group} aria-hidden={duplicate || undefined}>
-      {awards.map(([eyebrow, title, detail]) => (
+      {items.map(([eyebrow, title, detail]) => (
         <article key={`${eyebrow}-${title}`} className="flex w-76 shrink-0 items-center gap-4 rounded-2xl border border-white/15 bg-white/4 px-5 py-5 sm:w-[24rem]">
-          <img src="/award-icon.png" className="w-10" alt="Award Icon" />
+          <img src={iconUrl} className="w-10" alt="Award Icon" />
           <div className="min-w-0 font-heading uppercase">
             <p className="text-xs font-extrabold leading-5 text-white/90 sm:text-sm">{eyebrow}</p>
             <h3 className="text-sm font-extrabold leading-5 text-kw-primary sm:text-base">{title}</h3>
@@ -29,14 +29,18 @@ function AwardCards({ duplicate = false }: { duplicate?: boolean }) {
   );
 }
 
-export default function AwardsSection() {
+export default function AwardsSection({ content }: { content?: HomepageSection }) {
+  const data = content?.data
+  const items = Array.isArray(data?.items) ? data.items.map((item) => { const value = item as Record<string,string>; return [value.eyebrow, value.title, value.detail] as const }) : awards
+  const iconUrl = String(data?.iconUrl || '/award-icon.png')
   return (
     <section data-aos-skip aria-labelledby="awards-title" className="overflow-hidden border-y border-white/10 bg-kw-secondary py-14 sm:py-16">
       <div className="mx-auto mb-9 max-w-7xl px-6 text-center lg:px-8">
-        <h2 id="awards-title" className="font-heading text-3xl font-extrabold text-white sm:text-4xl">Reconocimientos internacionales</h2>
+        <h2 id="awards-title" className="font-heading text-3xl font-extrabold text-white sm:text-4xl">{content?.title || 'Reconocimientos internacionales'}</h2>
+        {content?.subtitle && <p className="mx-auto mt-3 max-w-3xl text-white/60">{content.subtitle}</p>}
       </div>
       <div className={styles.viewport}>
-        <div className={styles.track}><AwardCards /><AwardCards duplicate /></div>
+        <div className={styles.track}><AwardCards items={items} iconUrl={iconUrl}/><AwardCards duplicate items={items} iconUrl={iconUrl}/></div>
       </div>
     </section>
   );
