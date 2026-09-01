@@ -28,7 +28,7 @@ export function MarketCenterDetailPage({ id }: { id: string }) {
         href="/centros-de-mercado"
         className="mb-8 inline-flex items-center rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-kw-secondary transition-colors hover:bg-neutral-100"
       >
-        <ArrowLeft size={16} className="mr-2" /> Volver a Market Centers
+        <ArrowLeft size={16} className="mr-2" /> Volver a Centros de Mercado
       </Link>
 
       {isLoading && (
@@ -61,21 +61,11 @@ export function MarketCenterDetailPage({ id }: { id: string }) {
                 <h1 className="mb-2 font-heading text-3xl font-bold text-kw-secondary md:text-4xl">
                   {marketCenter.Market_Center}
                 </h1>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    [marketCenter.Street, marketCenter.Municipality, marketCenter.State, marketCenter.Postal_Code, 'México']
-                      .filter(Boolean)
-                      .join(', '),
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  title="Abrir en Google Maps para navegación"
-                  className="mb-6 flex items-center text-lg text-kw-tertiary transition-colors hover:text-kw-primary hover:underline"
-                >
+                <p className="mb-6 flex items-center text-lg text-kw-tertiary">
                   <MapPin className="mr-2 shrink-0 text-kw-primary" size={20} />
                   {marketCenter.Street}, {marketCenter.Municipality}, {marketCenter.State}
                   {marketCenter.Postal_Code ? `, ${marketCenter.Postal_Code}` : ''}
-                </a>
+                </p>
 
                 <div className="mb-8 flex flex-wrap gap-4">
                   {marketCenter.Phone && (
