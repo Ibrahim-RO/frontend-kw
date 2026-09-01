@@ -13,8 +13,8 @@ import { NearbyPropertyCard } from './NearbyPropertyCard'
 // uno mas grande antes de rendirnos, para no dejar sin contenido a alguien
 // en una zona con poca cobertura.
 const RADIUS_STEPS_KM = [20, 75, 250]
-const FEATURED_COUNT = 8
-const SCROLL_STEP_PX = 300
+const FEATURED_COUNT = 12
+const SCROLL_STEP_PX = 220
 
 type Status = 'idle' | 'locating' | 'ready' | 'unavailable'
 
@@ -74,12 +74,9 @@ export default function FeaturedPropertiesSection() {
   if (status !== 'ready') return null
 
   return (
-    <section className="bg-neutral-50 py-20 sm:py-24 lg:py-28" aria-labelledby="featured-properties-title">
+    <section className="bg-white py-10 sm:py-12" aria-labelledby="featured-properties-title">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <h2
-          id="featured-properties-title"
-          className="mb-8 font-heading text-3xl font-bold text-kw-secondary sm:text-4xl"
-        >
+        <h2 id="featured-properties-title" className="mb-5 font-heading text-lg font-bold text-kw-secondary sm:text-xl">
           Propiedades cerca de ti
         </h2>
 
@@ -95,7 +92,7 @@ export default function FeaturedPropertiesSection() {
 
           <div
             ref={scrollRef}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {properties.map((property) => (
               <NearbyPropertyCard key={property.ID} property={property} />
