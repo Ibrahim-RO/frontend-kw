@@ -30,8 +30,8 @@ export function Header({ onMenuClick }: HeaderProps) {
       <PageTitle title={title} />
 
       <div className="ml-auto flex flex-1 items-center justify-end gap-2 lg:gap-4">
-        <SearchBar />
-        <HeaderActions />
+        {/* <SearchBar /> */}
+        {/* <HeaderActions /> */}
         <UserMenu />
       </div>
     </header>

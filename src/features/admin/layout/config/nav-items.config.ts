@@ -19,13 +19,13 @@ export type AdminNavItem = {
 }
 
 export const adminNavItems: AdminNavItem[] = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { label: 'Usuarios', href: '/admin/usuarios', icon: Users, adminOnly: true },
-  { label: 'Propiedades', href: '/admin/propiedades', icon: Building2 },
-  { label: 'Blog', href: '/admin/blog', icon: Newspaper },
+  // { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  // { label: 'Propiedades', href: '/admin/propiedades', icon: Building2 },
   { label: 'Homepage', href: '/admin/homepage', icon: PanelsTopLeft },
-  { label: 'Marketing', href: '/admin/marketing', icon: Megaphone },
-  { label: 'SEO', href: '/admin/seo', icon: Search },
+  // { label: 'Marketing', href: '/admin/marketing', icon: Megaphone },
+  // { label: 'SEO', href: '/admin/seo', icon: Search },
+  // { label: 'Blog', href: '/admin/blog', icon: Newspaper },
+  { label: 'Usuarios', href: '/admin/usuarios', icon: Users, adminOnly: true },
   { label: 'Configuración', href: '/admin/configuracion', icon: Settings },
 ]
 
