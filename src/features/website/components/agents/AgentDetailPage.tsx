@@ -3,12 +3,14 @@ import { ArrowLeft, Bath, BedDouble, Building2, Mail, MapPin, Phone, Ruler } fro
 import type { AgentPropertiesResponse, Property } from '../../properties/types'
 import { formatPrice, getPropertyLocation, isRental } from '../../properties/lib/format'
 import { getOperationLabel } from '../../properties/lib/property-options'
+import { LuxuryRibbon } from '@/src/shared/components/LuxuryRibbon'
 
 function PropertyCard({ property }: { property: Property }) {
     const location = getPropertyLocation(property) || property.Geo_Direccion_Completa
 
     return (
-        <article className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <article className="group relative overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            {property.Luxury === 1 && <LuxuryRibbon />}
             <Link href={`/propiedades/${property.ID}`} className="relative block aspect-16/10 overflow-hidden bg-neutral-100">
                 {property.Photo_URL ? (
                     <img
@@ -67,6 +69,7 @@ export default function AgentDetailPage({ response }: { response: AgentPropertie
                 </Link>
 
                 <section className="relative mt-7 overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-lg">
+                    {agent.Luxury === 1 && <LuxuryRibbon />}
                     <div className="absolute inset-x-0 top-0 h-2 bg-kw-primary" />
                     <div className="absolute -right-8 -top-20 select-none font-heading text-[15rem] font-black leading-none text-neutral-100" aria-hidden="true">KW</div>
 
@@ -80,7 +83,6 @@ export default function AgentDetailPage({ response }: { response: AgentPropertie
                         )}
 
                         <div className="min-w-0 flex-1">
-                            {agent.Luxury === 1 && <span className="mb-3 inline-block rounded-full bg-kw-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-kw-primary">KW Luxury</span>}
                             <h1 className="font-heading text-3xl font-extrabold text-kw-secondary md:text-5xl">{fullName}</h1>
                             {officeLocation && <p className="mt-3 flex items-center justify-center gap-2 text-base text-kw-tertiary md:justify-start"><Building2 size={18} className="text-kw-primary" />{officeLocation}</p>}
 
