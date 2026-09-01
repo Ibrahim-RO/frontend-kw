@@ -8,7 +8,7 @@ const navigation = [
     { href: "/#unete", label: "Únete" },
     { href: "/propiedades", label: "Propiedades" },
     { href: "/agentes", label: "Agentes" },
-    { href: "/centros-de-mercado", label: "Centros de Mercado" },
+    { href: "/centros-de-mercado", label: "Market Centers" },
 ];
 
 const resources = [
