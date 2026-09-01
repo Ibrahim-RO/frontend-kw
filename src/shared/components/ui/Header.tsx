@@ -15,7 +15,7 @@ const navigationItems: NavigationItem[] = [
     { href: "/#contact", label: "Contacto", section: "contact", homeOnly: true },
     { href: "/agentes", label: "Agentes" },
     { href: "/propiedades", label: "Propiedades" },
-    { href: "/centros-de-mercado", label: "Centros de Mercado", mobileLabel: "Centros" },
+    { href: "/centros-de-mercado", label: "Market Centers" },
 ];
 
 const resources = [

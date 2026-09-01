@@ -32,3 +32,19 @@ export function getPolygonBounds(polygon: LatLngPoint[]): MapBounds {
     BottomRigth_Longitude: Math.max(...lngs),
   }
 }
+
+const EARTH_RADIUS_KM = 6371
+
+// Distancia en línea recta entre dos puntos (fórmula de Haversine). Se usa
+// para encontrar el Market Center más cercano a la ubicación del usuario.
+export function haversineDistanceKm(a: LatLngPoint, b: LatLngPoint): number {
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+  const dLat = toRad(b.lat - a.lat)
+  const dLng = toRad(b.lng - a.lng)
+
+  const sinLat = Math.sin(dLat / 2)
+  const sinLng = Math.sin(dLng / 2)
+  const h = sinLat * sinLat + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * sinLng * sinLng
+
+  return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h))
+}
