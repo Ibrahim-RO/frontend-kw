@@ -1,6 +1,7 @@
 import { useRouter } from 'next/navigation'
 import { Mail, Phone } from 'lucide-react'
 import type { PropertyAgent } from '../../properties/types'
+import { LuxuryRibbon } from '@/src/shared/components/LuxuryRibbon'
 
 type Props = {
     agentData: PropertyAgent
@@ -11,7 +12,8 @@ export default function AgentsCard({ agentData }: Props) {
     const phone = agentData.Mobile_Phone || agentData.Phone;
 
     return (
-        <div className="h-full flex flex-col justify-between items-center gap-3 border p-5 rounded-lg shadow">
+        <div className="relative h-full flex flex-col justify-between items-center gap-3 border p-5 rounded-lg shadow overflow-hidden">
+            {agentData.Luxury === 1 && <LuxuryRibbon />}
             {agentData.Agent_Photo_url ? (
                 <img
                     src={agentData.Agent_Photo_url}

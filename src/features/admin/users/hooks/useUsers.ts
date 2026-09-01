@@ -5,5 +5,6 @@ export function useUsers(params: { page?: number; limit?: number } = {}) {
   return useQuery({
     queryKey: ['admin-users', params],
     queryFn: () => fetchUsers(params),
+    placeholderData: (previousData) => previousData,
   })
 }

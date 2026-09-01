@@ -2,12 +2,14 @@ import Link from 'next/link'
 import { Mail, Phone, User } from 'lucide-react'
 import type { PropertyAgent } from '../types'
 import { getAgentFullName } from '../lib/format'
+import { LuxuryRibbon } from '@/src/shared/components/LuxuryRibbon'
 
 export function AgentCard({ agent }: { agent: PropertyAgent }) {
   const fullName = getAgentFullName(agent)
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-7 text-center">
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50 p-7 text-center">
+      {agent.Luxury === 1 && <LuxuryRibbon />}
       <Link href={`/agentes/${agent.ID}`} className="group block">
         {agent.Agent_Photo_url ? (
           <img

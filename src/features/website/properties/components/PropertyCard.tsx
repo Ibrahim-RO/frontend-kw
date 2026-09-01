@@ -3,12 +3,14 @@ import type { Property } from '../types'
 import { formatPrice, getAgentFullName, getPropertyLocation, isRental } from '../lib/format'
 import { getOperationLabel } from '../lib/property-options'
 import { useAgent } from '../hooks/useAgent'
+import { LuxuryRibbon } from '@/src/shared/components/LuxuryRibbon'
 
 export function PropertyCard({ property }: { property: Property }) {
   const { data: agent } = useAgent(property.Agent_ID)
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
+    <article className="group relative overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
+      {property.Luxury === 1 && <LuxuryRibbon />}
       <Link href={`/propiedades/${property.ID}`} className="relative block aspect-4/3 overflow-hidden bg-neutral-900">
         {property.Photo_URL ? (
           <img
