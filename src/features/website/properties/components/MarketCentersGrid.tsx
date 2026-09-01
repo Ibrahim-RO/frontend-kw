@@ -6,9 +6,13 @@ type MarketCentersGridProps = {
   marketCenters: MarketCenter[]
   isLoading: boolean
   isError: boolean
+  // Cuando ya se mostró el más cercano aparte (NearestMarketCenterCard), un
+  // grid vacío aquí abajo es normal (era el único resultado) — no tiene
+  // sentido decir "no se encontraron Market Centers" justo debajo de uno.
+  hasFeatured?: boolean
 }
 
-export function MarketCentersGrid({ marketCenters, isLoading, isError }: MarketCentersGridProps) {
+export function MarketCentersGrid({ marketCenters, isLoading, isError, hasFeatured }: MarketCentersGridProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24 text-kw-tertiary">
@@ -26,6 +30,8 @@ export function MarketCentersGrid({ marketCenters, isLoading, isError }: MarketC
   }
 
   if (marketCenters.length === 0) {
+    if (hasFeatured) return null
+
     return (
       <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center text-kw-tertiary">
         No se encontraron Market Centers.
