@@ -1,10 +1,9 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { FileDown, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useMarketCenterAgents } from '../hooks/useMarketCenterAgents'
-import { getAgentFullName } from '../lib/format'
+import { AgentSearchCombobox } from './AgentSearchCombobox'
 import type { Property, PropertyAgent } from '../types'
 
 type PropertyPdfButtonProps = {
@@ -14,22 +13,8 @@ type PropertyPdfButtonProps = {
 }
 
 export function PropertyPdfButton({ property, heroPhoto, defaultAgent }: PropertyPdfButtonProps) {
-  const { data } = useMarketCenterAgents(property.Market_Center_ID, 1)
-  const agents = data?.data.Agents_Data ?? []
-
-  // La propiedad puede traer un asesor asignado que no venga en la primera
-  // página de agentes del Market Center — si pasa, lo agregamos igual a la
-  // lista para que siga preseleccionado por default.
-  const selectableAgents = useMemo(() => {
-    if (!defaultAgent) return agents
-    if (agents.some((agent) => agent.ID === defaultAgent.ID)) return agents
-    return [defaultAgent, ...agents]
-  }, [agents, defaultAgent])
-
-  const [selectedAgentId, setSelectedAgentId] = useState<number | null>(defaultAgent?.ID ?? null)
+  const [selectedAgent, setSelectedAgent] = useState<PropertyAgent | null>(defaultAgent)
   const [isGenerating, setIsGenerating] = useState(false)
-
-  const selectedAgent = selectableAgents.find((agent) => agent.ID === selectedAgentId) ?? defaultAgent ?? null
 
   const handleDownload = async () => {
     setIsGenerating(true)
@@ -59,20 +44,7 @@ export function PropertyPdfButton({ property, heroPhoto, defaultAgent }: Propert
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      {selectableAgents.length > 1 && (
-        <select
-          value={selectedAgentId ?? ''}
-          onChange={(event) => setSelectedAgentId(Number(event.target.value))}
-          className="h-12 rounded-sm border border-neutral-300 px-3 text-xs font-semibold text-kw-secondary uppercase outline-none focus:border-kw-primary"
-          aria-label="Elegir agente para la ficha en PDF"
-        >
-          {selectableAgents.map((agent) => (
-            <option key={agent.ID} value={agent.ID}>
-              {getAgentFullName(agent)}
-            </option>
-          ))}
-        </select>
-      )}
+      <AgentSearchCombobox value={selectedAgent} onSelect={setSelectedAgent} />
 
       <button
         type="button"
