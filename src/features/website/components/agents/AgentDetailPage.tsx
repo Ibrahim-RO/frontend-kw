@@ -21,7 +21,7 @@ function PropertyCard({ property }: { property: Property }) {
                 ) : (
                     <div className="flex h-full items-center justify-center text-neutral-400">Sin fotografía</div>
                 )}
-                <span className="absolute right-4 top-4 rounded-full bg-kw-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-md">
+                <span className="absolute left-4 top-4 rounded-full bg-kw-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-md">
                     {getOperationLabel(property.Property_Operation_ID)}
                 </span>
             </Link>
