@@ -2,25 +2,42 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Loader2, Mail, MapPin, Phone } from 'lucide-react'
+import { ArrowLeft, Building2, Loader2, Mail, MapPin, Phone, Users } from 'lucide-react'
 import { useMarketCenter } from '../hooks/useMarketCenter'
 import { AGENTS_PAGE_SIZE, useMarketCenterAgents } from '../hooks/useMarketCenterAgents'
+import { useMarketCenterProperties } from '../hooks/useMarketCenterProperties'
 import { AgentCard } from './AgentCard'
+import { PropertyCard } from './PropertyCard'
 import { Pagination } from './Pagination'
+
+const PROPERTIES_PAGE_SIZE = 12
 
 export function MarketCenterDetailPage({ id }: { id: string }) {
   const { data, isLoading, isError } = useMarketCenter(id)
   const marketCenter = data?.data[0]
 
+  const [tab, setTab] = useState<'agentes' | 'propiedades'>('agentes')
   const [page, setPage] = useState(1)
+  const [propertiesPage, setPropertiesPage] = useState(1)
   useEffect(() => {
+    setTab('agentes')
     setPage(1)
+    setPropertiesPage(1)
   }, [id])
 
   const agentsQuery = useMarketCenterAgents(id, page)
   const agents = agentsQuery.data?.data.Agents_Data ?? []
   const totalAgents = agentsQuery.data?.data.Total_Agents ?? 0
   const totalPages = Math.max(1, Math.ceil(totalAgents / AGENTS_PAGE_SIZE))
+
+  const propertiesQuery = useMarketCenterProperties(id, tab === 'propiedades')
+  const allProperties = propertiesQuery.data?.properties ?? []
+  const totalProperties = allProperties.length
+  const totalPropertiesPages = Math.max(1, Math.ceil(totalProperties / PROPERTIES_PAGE_SIZE))
+  const properties = allProperties.slice(
+    (propertiesPage - 1) * PROPERTIES_PAGE_SIZE,
+    propertiesPage * PROPERTIES_PAGE_SIZE,
+  )
 
   return (
     <main className="mx-auto mb-16 max-w-7xl px-4 pt-10">
@@ -106,37 +123,96 @@ export function MarketCenterDetailPage({ id }: { id: string }) {
           </section>
 
           <section className="mt-10">
-            <h2 className="mb-6 border-l-4 border-kw-primary pl-4 font-heading text-2xl font-bold text-kw-secondary">
-              Agentes ({totalAgents})
-            </h2>
+            <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-neutral-200">
+              <button
+                type="button"
+                onClick={() => setTab('agentes')}
+                className={`flex items-center gap-2 border-b-2 px-1 pb-3 font-heading text-lg font-bold transition-colors ${
+                  tab === 'agentes'
+                    ? 'border-kw-primary text-kw-secondary'
+                    : 'border-transparent text-kw-tertiary hover:text-kw-secondary'
+                }`}
+              >
+                <Users size={18} /> Agentes ({totalAgents})
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab('propiedades')}
+                className={`flex items-center gap-2 border-b-2 px-1 pb-3 font-heading text-lg font-bold transition-colors ${
+                  tab === 'propiedades'
+                    ? 'border-kw-primary text-kw-secondary'
+                    : 'border-transparent text-kw-tertiary hover:text-kw-secondary'
+                }`}
+              >
+                <Building2 size={18} />
+                Propiedades{propertiesQuery.data ? ` (${totalProperties})` : ''}
+              </button>
+            </div>
 
-            {agentsQuery.isLoading && (
-              <div className="flex items-center justify-center py-16 text-kw-tertiary">
-                <Loader2 className="mr-2 animate-spin" size={20} /> Cargando agentes...
-              </div>
+            {tab === 'agentes' && (
+              <>
+                {agentsQuery.isLoading && (
+                  <div className="flex items-center justify-center py-16 text-kw-tertiary">
+                    <Loader2 className="mr-2 animate-spin" size={20} /> Cargando agentes...
+                  </div>
+                )}
+
+                {agentsQuery.isError && (
+                  <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center text-kw-tertiary">
+                    No se pudieron cargar los agentes.
+                  </div>
+                )}
+
+                {!agentsQuery.isLoading && !agentsQuery.isError && agents.length === 0 && (
+                  <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center text-kw-tertiary">
+                    Este Market Center todavía no tiene agentes listados.
+                  </div>
+                )}
+
+                {agents.length > 0 && (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {agents.map((agent) => (
+                      <AgentCard key={agent.ID} agent={agent} />
+                    ))}
+                  </div>
+                )}
+
+                <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+              </>
             )}
 
-            {agentsQuery.isError && (
-              <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center text-kw-tertiary">
-                No se pudieron cargar los agentes.
-              </div>
-            )}
+            {tab === 'propiedades' && (
+              <>
+                {propertiesQuery.isLoading && (
+                  <div className="flex flex-col items-center justify-center gap-2 py-16 text-center text-kw-tertiary">
+                    <Loader2 className="animate-spin" size={20} />
+                    Cargando propiedades del Market Center, esto puede tardar unos segundos...
+                  </div>
+                )}
 
-            {!agentsQuery.isLoading && !agentsQuery.isError && agents.length === 0 && (
-              <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center text-kw-tertiary">
-                Este Market Center todavía no tiene agentes listados.
-              </div>
-            )}
+                {propertiesQuery.isError && (
+                  <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center text-kw-tertiary">
+                    No se pudieron cargar las propiedades.
+                  </div>
+                )}
 
-            {agents.length > 0 && (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {agents.map((agent) => (
-                  <AgentCard key={agent.ID} agent={agent} />
-                ))}
-              </div>
-            )}
+                {!propertiesQuery.isLoading && !propertiesQuery.isError && properties.length === 0 && (
+                  <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center text-kw-tertiary">
+                    Este Market Center todavía no tiene propiedades publicadas.
+                  </div>
+                )}
 
-            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+                {properties.length > 0 && (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {properties.map((property) => (
+                      <PropertyCard key={property.ID} property={property} />
+                    ))}
+                  </div>
+                )}
+
+                <Pagination page={propertiesPage} totalPages={totalPropertiesPages} onPageChange={setPropertiesPage} />
+              </>
+            )}
           </section>
         </>
       )}
