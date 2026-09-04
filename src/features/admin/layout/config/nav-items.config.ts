@@ -24,7 +24,7 @@ export const adminNavItems: AdminNavItem[] = [
   { label: 'Homepage', href: '/admin/homepage', icon: PanelsTopLeft },
   // { label: 'Marketing', href: '/admin/marketing', icon: Megaphone },
   // { label: 'SEO', href: '/admin/seo', icon: Search },
-  // { label: 'Blog', href: '/admin/blog', icon: Newspaper },
+  { label: 'Blog', href: '/admin/blog', icon: Newspaper },
   { label: 'Usuarios', href: '/admin/usuarios', icon: Users, adminOnly: true },
   { label: 'Configuración', href: '/admin/configuracion', icon: Settings },
 ]
