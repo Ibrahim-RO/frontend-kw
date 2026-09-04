@@ -10,6 +10,7 @@ export type CreateBlogPayload = {
   slug?: string
   published_at: string
   content: string
+  featured_image_url?: string
   extra_authors?: string
 }
 

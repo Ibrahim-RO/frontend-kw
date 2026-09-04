@@ -5,6 +5,7 @@ export const blogForm = z.object({
   slug: z.string().max(160, 'Máximo 160 caracteres').optional(),
   published_at: z.string().min(1, 'La fecha de publicación es obligatoria'),
   content: z.string().min(1, 'El contenido es obligatorio'),
+  featured_image_url: z.string().optional(),
   extra_authors: z.string().optional(),
 })
 

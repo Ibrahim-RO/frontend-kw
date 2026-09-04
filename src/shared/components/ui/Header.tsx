@@ -16,6 +16,7 @@ const navigationItems: NavigationItem[] = [
     { href: "/agentes", label: "Agentes" },
     { href: "/propiedades", label: "Propiedades" },
     { href: "/centros-de-mercado", label: "Market Centers" },
+    { href: "/blog", label: "Blog" },
 ];
 
 const resources = [

@@ -14,6 +14,7 @@ import {
   FormSubmit,
   FormError,
 } from '@/src/shared/components/forms'
+import { ImageUpload } from '@/src/shared/components/ImageUpload'
 import { blogForm, type BlogFormValues } from '../schemas/blog.schema'
 import { RichTextEditor } from './RichTextEditor'
 import { slugify } from '../lib/slugify'
@@ -60,11 +61,13 @@ export function BlogForm({ mode, blogPost }: BlogFormProps) {
       published_at:
         toDateInputValue(blogPost?.published_at) || toDateInputValue(new Date().toISOString()),
       content: blogPost?.content ?? '',
+      featured_image_url: blogPost?.featured_image_url ?? '',
       extra_authors: blogPost?.extra_authors ?? '',
     },
   })
 
   const title = watch('title')
+  const featuredImageUrl = watch('featured_image_url')
 
   useEffect(() => {
     if (slugTouched) return
@@ -79,6 +82,7 @@ export function BlogForm({ mode, blogPost }: BlogFormProps) {
     const payload = {
       ...values,
       slug: values.slug || undefined,
+      featured_image_url: values.featured_image_url || undefined,
       extra_authors: values.extra_authors || undefined,
     }
 
@@ -144,6 +148,16 @@ export function BlogForm({ mode, blogPost }: BlogFormProps) {
           {errors.extra_authors && <FormError>{errors.extra_authors.message}</FormError>}
         </FormField>
       </div>
+
+      <FormField>
+        <ImageUpload
+          label="Imagen destacada"
+          value={featuredImageUrl}
+          onChange={(url) => setValue('featured_image_url', url)}
+          endpoint="/api/admin/blog/images"
+        />
+        {errors.featured_image_url && <FormError>{errors.featured_image_url.message}</FormError>}
+      </FormField>
 
       {mode === 'edit' && (
         <FormField>

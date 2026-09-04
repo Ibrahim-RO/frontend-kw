@@ -48,6 +48,14 @@ Cualquier sección de home (Hero, Propiedades, Reconocimientos, etc.) sigue este
 
 El panel `Configuración > Homepage` (`src/features/admin/homepage/components/HomepageEditor.tsx`) edita/reordena/oculta secciones contra `/admin/homepage` (borrador) y las publica contra `/admin/homepage/publish`. Las secciones son independientes entre sí — si necesitas que dos se vean "pegadas" visualmente (como Hero + Propiedades), hazlo con estilos (sin márgenes/gaps entre secciones), nunca anidando el componente de una dentro de otra, porque rompe que el admin las pueda reordenar/ocultar por separado.
 
+## Blog público
+
+El blog tiene dos mitades separadas, como cualquier recurso con lectura pública + gestión admin:
+- **Admin** (`src/features/admin/blog`): CRUD completo contra `backend-kw`'s `admin/blog` (crear/editar/eliminar, `RichTextEditor` con Tiptap para `content`, `ImageUpload` para `featured_image_url`). Sigue el patrón estándar `actions/api/components/dal/hooks/schemas` del resto del admin.
+- **Público** (`src/features/website/blog`): páginas `app/(website)/blog/page.tsx` (listado, con paginación simple Anterior/Siguiente vía `?page=`) y `app/(website)/blog/[slug]/page.tsx` (detalle, con tabla de contenidos generada de los `<h2>` del `content` vía `lib/content.ts`, botones de compartir y `generateMetadata` para SEO). Ambas son Server Components que llaman directo a `GET /blog` y `GET /blog/:slug` del backend (`dal/blog.dal.ts`, `fetch` con `next.revalidate`, sin pasar por BFF porque es lectura pública sin sesión) — mismo patrón que `getPublishedHomepage()`. El link "Blog" vive en `src/shared/components/ui/Header.tsx` junto con el resto de la navegación pública.
+
+`src/shared/components/ImageUpload.tsx` es el componente de subida de imágenes reutilizable (recibe `endpoint`) — lo usan tanto `admin/blog` como (vía su propia copia local histórica) `admin/homepage`; para una sección nueva que necesite subir imágenes, usa el componente compartido en vez de duplicarlo otra vez.
+
 ## Identidad visual
 
 Definida en `UI.jpeg` (raíz del proyecto `KW-MEXICO`, fuera de este repo):
