@@ -10,10 +10,13 @@ import {
   List,
   ListOrdered,
   Link as LinkIcon,
+  Quote,
+  Minus,
   Undo,
   Redo,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ImageInsertButton } from './ImageInsertButton'
 
 type RichTextToolbarProps = {
   editor: Editor | null
@@ -122,6 +125,20 @@ export function RichTextToolbar({ editor }: RichTextToolbarProps) {
       <ToolbarButton label="Enlace" isActive={editor.isActive('link')} onClick={setLink}>
         <LinkIcon className="size-4" />
       </ToolbarButton>
+
+      <div className="mx-1 h-5 w-px bg-border" />
+
+      <ToolbarButton
+        label="Cita"
+        isActive={editor.isActive('blockquote')}
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+      >
+        <Quote className="size-4" />
+      </ToolbarButton>
+      <ToolbarButton label="Línea divisoria" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+        <Minus className="size-4" />
+      </ToolbarButton>
+      <ImageInsertButton editor={editor} />
 
       <div className="mx-1 h-5 w-px bg-border" />
 

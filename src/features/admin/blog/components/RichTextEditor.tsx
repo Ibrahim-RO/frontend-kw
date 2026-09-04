@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
 import { useEffect } from 'react'
 import { RichTextToolbar } from './RichTextToolbar'
 
@@ -18,13 +19,14 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       StarterKit,
       Underline,
       Link.configure({ openOnClick: false, autolink: true }),
+      Image.configure({ HTMLAttributes: { class: 'rounded-xl' } }),
     ],
     content: value,
     immediatelyRender: false,
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm max-w-none min-h-48 rounded-b-md border border-t-0 border-input bg-background px-3 py-2 text-sm text-foreground outline-none',
+          'prose prose-sm max-w-none min-h-72 rounded-b-md border border-t-0 border-input bg-background px-3 py-2 text-sm text-foreground outline-none [&_img]:my-3 [&_img]:max-w-full',
       },
     },
     onUpdate: ({ editor }) => {
