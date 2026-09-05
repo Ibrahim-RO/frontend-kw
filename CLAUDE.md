@@ -56,6 +56,16 @@ El blog tiene dos mitades separadas, como cualquier recurso con lectura pública
 
 `src/shared/components/ImageUpload.tsx` es el componente de subida de imágenes reutilizable (recibe `endpoint`) — lo usan tanto `admin/blog` como (vía su propia copia local histórica) `admin/homepage`; para una sección nueva que necesite subir imágenes, usa el componente compartido en vez de duplicarlo otra vez.
 
+El editor de contenido (`RichTextEditor.tsx` + `RichTextToolbar.tsx`, Tiptap) soporta encabezados H2/H3, cita, línea divisoria, enlaces e imágenes (`ImageInsertButton.tsx`, sube archivo o pega URL contra `/api/admin/blog/images`). Los **H2** que el redactor use dentro del contenido son los que generan automáticamente la tabla de contenidos en la página pública del post (`lib/content.ts` → `withHeadingIds`) — no hay un campo aparte para "el índice", se arma solo a partir de los encabezados.
+
+## Búsqueda de agentes sin restricción de Market Center
+
+`src/features/website/properties/components/AgentSearchCombobox.tsx` es el combobox reutilizable para buscar un agente por nombre en **toda la red** (no limitado a un Market Center), usado hoy en `PropertyPdfButton.tsx` para elegir con qué agente generar la ficha en PDF. Internamente usa `useAgents(page, marketCenterId?, name?, enabled?)` — el mismo hook que ya alimentaba el buscador de `/agentes` — que golpea `Wanted_Name_Listed_Agents_Info` cuando hay `name`. El parámetro `enabled` se agregó para poder condicionar la búsqueda a partir de 2+ caracteres sin disparar la query en cada tecla.
+
+## Propiedades de un Market Center (limitación del API externo)
+
+El API externo de propiedades (`Coordinates_Properties_Info`, `Listed_Properties_Info`) **no soporta filtrar por `Market_Center_ID`** — se probó en vivo mandándolo como filtro y el Lambda lo ignora silenciosamente (mismo comportamiento que otros filtros no soportados, ver `project_properties_api_quirks` en memoria). Por eso la pestaña "Propiedades" del detalle de Market Center (`MarketCenterDetailPage.tsx`) arma la lista agregando `Agent_Properties_Info` de cada agente de ese Market Center (`useMarketCenterProperties.ts`, vía la ruta BFF nueva `/api/agents/[id]/properties`), con `staleTime` de 15 minutos porque implica una llamada por agente. Si el API externo alguna vez agrega un filtro real por Market Center, esto se puede simplificar a una sola llamada.
+
 ## Identidad visual
 
 Definida en `UI.jpeg` (raíz del proyecto `KW-MEXICO`, fuera de este repo):
