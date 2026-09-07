@@ -80,11 +80,14 @@ export function UsersTable() {
                   <td className="px-4 py-3 text-muted-foreground">
                     {user.profile === 'admin'
                       ? 'Todos'
-                      : user.modules.length > 0
-                        ? user.modules
-                            .map((module) => moduleOptions.find((option) => option.value === module)?.label ?? module)
-                            .join(', ')
-                        : '—'}
+                      : (() => {
+                          const topLevel = user.modules.filter((module) => !module.includes(':'))
+                          return topLevel.length > 0
+                            ? topLevel
+                                .map((module) => moduleOptions.find((option) => option.value === module)?.label ?? module)
+                                .join(', ')
+                            : '—'
+                        })()}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">

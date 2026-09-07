@@ -13,7 +13,7 @@ import {
   FormSubmit,
   FormError,
 } from '@/src/shared/components/forms'
-import { createUserForm, editUserForm, moduleOptions, userProfileOptions } from '../schemas/user.schema'
+import { createUserForm, editUserForm, homepageSubmoduleOptions, moduleOptions, userProfileOptions } from '../schemas/user.schema'
 import { useCreateUser, useUpdateUser } from '../hooks/useUserMutations'
 import type { AdminUser, ModuleKey } from '../types'
 
@@ -48,8 +48,15 @@ export function UserForm({ mode, user }: UserFormProps) {
   const profile = watch('profile')
   const modules = watch('modules') ?? []
   const isMarketing = profile === 'marketing'
+  const hasHomepage = modules.includes('homepage')
 
   const toggleModule = (module: ModuleKey, checked: boolean) => {
+    if (module === 'homepage' && !checked) {
+      // Sin acceso a Homepage no tiene sentido conservar sus sub-permisos.
+      const homepageKeys = new Set(homepageSubmoduleOptions.map((option) => option.value as ModuleKey))
+      setValue('modules', modules.filter((m) => m !== module && !homepageKeys.has(m)))
+      return
+    }
     setValue('modules', checked ? [...modules, module] : modules.filter((m) => m !== module))
   }
 
@@ -175,6 +182,30 @@ export function UserForm({ mode, user }: UserFormProps) {
             ))}
           </div>
           {errors.modules && <FormError>{errors.modules.message}</FormError>}
+
+          {hasHomepage && (
+            <div className="mt-3 rounded-md border border-dashed border-border p-3">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">
+                Pestañas de Homepage con acceso
+              </p>
+              <div className="grid gap-2.5 sm:grid-cols-3">
+                {homepageSubmoduleOptions.map((option) => (
+                  <label
+                    key={option.value}
+                    className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm text-foreground has-checked:border-primary has-checked:bg-primary/5"
+                  >
+                    <input
+                      type="checkbox"
+                      className="size-4 accent-primary"
+                      checked={modules.includes(option.value)}
+                      onChange={(event) => toggleModule(option.value, event.target.checked)}
+                    />
+                    {option.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </FormField>
       ) : (
         <p className="text-sm text-muted-foreground">

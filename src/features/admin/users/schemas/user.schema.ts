@@ -13,6 +13,24 @@ export const moduleOptions = [
   { value: 'marketing', label: 'Marketing' },
 ] as const
 
+// Sub-permisos de las 3 pestañas del editor de Homepage (HomepageEditor.tsx)
+// — solo aplican si "homepage" también está marcado.
+export const homepageSubmoduleOptions = [
+  { value: 'homepage:sections', label: 'Secciones' },
+  { value: 'homepage:seo', label: 'SEO y Schema' },
+  { value: 'homepage:code', label: 'Head y Body' },
+] as const
+
+const moduleKeyValues = [
+  'homepage',
+  'homepage:sections',
+  'homepage:seo',
+  'homepage:code',
+  'blog',
+  'seo',
+  'marketing',
+] as const
+
 const baseUserFields = {
   name: z.string().min(1, 'El nombre es obligatorio').max(60, 'Máximo 60 caracteres'),
   last_name: z.string().min(1, 'El apellido paterno es obligatorio').max(60, 'Máximo 60 caracteres'),
@@ -20,7 +38,7 @@ const baseUserFields = {
   email: z.email('Correo no válido'),
   phone: z.string().min(1, 'El teléfono es obligatorio'),
   profile: z.enum(['admin', 'marketing'], 'Selecciona un perfil'),
-  modules: z.array(z.enum(['homepage', 'blog', 'seo', 'marketing'])).default([]),
+  modules: z.array(z.enum(moduleKeyValues)).default([]),
 }
 
 export const createUserForm = z.object({

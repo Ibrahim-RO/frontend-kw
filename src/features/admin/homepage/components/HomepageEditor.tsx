@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ChangeEvent } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
 import {
   Eye,
   EyeOff,
@@ -16,6 +16,13 @@ import { toast } from 'sonner'
 
 import { sectionData } from '../section-defaults'
 import type { HomepageSection, HomepageSettings } from '../types'
+import { useMyProfile } from '@/src/features/admin/profile/hooks/useMyProfile'
+
+const TABS = [
+  { id: 'content', label: 'Secciones', moduleKey: 'homepage:sections' },
+  { id: 'seo', label: 'SEO y Schema', moduleKey: 'homepage:seo' },
+  { id: 'code', label: 'Head y Body', moduleKey: 'homepage:code' },
+] as const
 
 const input =
   'min-h-11 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15'
@@ -39,6 +46,18 @@ export function HomepageEditor({
   const [doc, setDoc] = useState(initial.draft)
   const [tab, setTab] = useState<'content' | 'seo' | 'code'>('content')
   const [busy, setBusy] = useState(false)
+
+  const { data: profile } = useMyProfile()
+  const isAdmin = profile?.profile === 'admin'
+  const grantedModules = profile?.modules ?? []
+  const availableTabs = TABS.filter((t) => isAdmin || grantedModules.includes(t.moduleKey))
+
+  useEffect(() => {
+    if (availableTabs.length && !availableTabs.some((t) => t.id === tab)) {
+      setTab(availableTabs[0].id)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile])
 
   const updateSection = (index: number, section: HomepageSection) =>
     setDoc((v) => ({
@@ -116,27 +135,29 @@ export function HomepageEditor({
         </div>
       </div>
 
-      <div className="inline-flex max-w-full gap-1 rounded-lg border bg-muted/40 p-1">
-        {(['content', 'seo', 'code'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`rounded-md px-4 py-2 text-sm transition-all ${
-              tab === t
-                ? 'bg-background font-semibold shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {t === 'content'
-              ? 'Secciones'
-              : t === 'seo'
-                ? 'SEO y Schema'
-                : 'Head y Body'}
-          </button>
-        ))}
-      </div>
+      {availableTabs.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+          No tienes acceso a ninguna pestaña de Homepage.
+        </p>
+      ) : (
+        <div className="inline-flex max-w-full gap-1 rounded-lg border bg-muted/40 p-1">
+          {availableTabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`rounded-md px-4 py-2 text-sm transition-all ${
+                tab === t.id
+                  ? 'bg-background font-semibold shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {tab === 'content' && (
+      {tab === 'content' && availableTabs.some((t) => t.id === 'content') && (
         <div className="space-y-8 rounded-xl bg-muted/25 p-3 sm:p-5">
           {doc.sections.map((section, index) => (
             <SectionEditor
@@ -150,7 +171,7 @@ export function HomepageEditor({
         </div>
       )}
 
-      {tab === 'seo' && (
+      {tab === 'seo' && availableTabs.some((t) => t.id === 'seo') && (
         <div className="grid gap-4 rounded-lg border bg-card p-5 md:grid-cols-2">
           <Text
             label="Título SEO"
@@ -263,7 +284,7 @@ export function HomepageEditor({
         </div>
       )}
 
-      {tab === 'code' && (
+      {tab === 'code' && availableTabs.some((t) => t.id === 'code') && (
         <div className="space-y-4 rounded-lg border bg-card p-5">
           <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
             Código avanzado. Usa solamente etiquetas de proveedores confiables.

@@ -2,8 +2,17 @@ export type UserProfileRole = 'admin' | 'marketing'
 
 // Módulos del panel asignables a un usuario con perfil "marketing".
 // Homepage/Blog ya existen; SEO/Marketing se dejan listados para cuando se
-// construyan esas secciones (ver frontend-kw/CLAUDE.md).
-export type ModuleKey = 'homepage' | 'blog' | 'seo' | 'marketing'
+// construyan esas secciones (ver frontend-kw/CLAUDE.md). Los 3 `homepage:*`
+// son sub-permisos de las pestañas del editor de Homepage y solo importan
+// si el usuario también trae "homepage".
+export type ModuleKey =
+  | 'homepage'
+  | 'homepage:sections'
+  | 'homepage:seo'
+  | 'homepage:code'
+  | 'blog'
+  | 'seo'
+  | 'marketing'
 
 export type AdminUser = {
   user_id: number

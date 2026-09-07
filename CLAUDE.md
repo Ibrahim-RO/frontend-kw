@@ -74,6 +74,8 @@ Solo hay dos perfiles: `admin` (acceso a todo el panel, sin excepción) y `marke
 
 Si agregas un módulo nuevo, mantenlo alineado en 3 lugares: `ModuleKey` en `backend-kw` (`src/users/enums/module-key.enum.ts`), `ModuleKey`/`moduleOptions` aquí, y el `moduleKey` del nav item correspondiente.
 
+**Sub-permisos dentro de un módulo:** Homepage tiene 3 pestañas propias (Secciones, SEO y Schema, Head y Body, ver `HomepageEditor.tsx`) que se asignan por separado con los mismos `ModuleKey` namespaced: `homepage:sections`, `homepage:seo`, `homepage:code` (`homepageSubmoduleOptions` en `user.schema.ts`). `UserForm.tsx` solo muestra ese sub-selector cuando `homepage` está marcado, y lo limpia si se desmarca (`toggleModule` cascada). `HomepageEditor.tsx` filtra qué pestañas mostrar con la misma regla `isAdmin || grantedModules.includes(...)` — si el usuario no tiene acceso a ninguna, ve un mensaje en vez del editor. El backend hace cumplir esto también a nivel de datos, no solo de UI (`HomepageService.mergeAllowed`, ver `backend-kw/CLAUDE.md`), así que aunque alguien llame al endpoint directo, la parte del documento sin permiso nunca se sobrescribe. Si otro módulo con "pestañas"/documento único necesita lo mismo, sigue este patrón en vez de crear un mecanismo nuevo.
+
 ## Identidad visual
 
 Definida en `UI.jpeg` (raíz del proyecto `KW-MEXICO`, fuera de este repo):
