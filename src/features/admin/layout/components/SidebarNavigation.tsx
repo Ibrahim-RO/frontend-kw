@@ -10,11 +10,16 @@ export function SidebarNavigation() {
   const pathname = usePathname()
   const { data: profile } = useMyProfile()
   const isAdmin = profile?.profile === 'admin'
+  const modules = profile?.modules ?? []
 
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
       {adminNavItems
-        .filter((item) => !item.adminOnly || isAdmin)
+        .filter((item) => {
+          if (item.adminOnly) return isAdmin
+          if (item.moduleKey) return isAdmin || modules.includes(item.moduleKey)
+          return true
+        })
         .map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
 

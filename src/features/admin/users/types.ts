@@ -1,4 +1,9 @@
-export type UserProfileRole = 'admin' | 'marketing' | 'seo' | 'usuario'
+export type UserProfileRole = 'admin' | 'marketing'
+
+// Módulos del panel asignables a un usuario con perfil "marketing".
+// Homepage/Blog ya existen; SEO/Marketing se dejan listados para cuando se
+// construyan esas secciones (ver frontend-kw/CLAUDE.md).
+export type ModuleKey = 'homepage' | 'blog' | 'seo' | 'marketing'
 
 export type AdminUser = {
   user_id: number
@@ -10,6 +15,7 @@ export type AdminUser = {
   avatar_url?: string | null
   status: boolean
   profile: UserProfileRole
+  modules: ModuleKey[]
   created_at: string
   updated_at: string
 }

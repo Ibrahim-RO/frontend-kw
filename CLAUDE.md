@@ -66,6 +66,14 @@ El editor de contenido (`RichTextEditor.tsx` + `RichTextToolbar.tsx`, Tiptap) so
 
 El API externo de propiedades (`Coordinates_Properties_Info`, `Listed_Properties_Info`) **no soporta filtrar por `Market_Center_ID`** — se probó en vivo mandándolo como filtro y el Lambda lo ignora silenciosamente (mismo comportamiento que otros filtros no soportados, ver `project_properties_api_quirks` en memoria). Por eso la pestaña "Propiedades" del detalle de Market Center (`MarketCenterDetailPage.tsx`) arma la lista agregando `Agent_Properties_Info` de cada agente de ese Market Center (`useMarketCenterProperties.ts`, vía la ruta BFF nueva `/api/agents/[id]/properties`), con `staleTime` de 15 minutos porque implica una llamada por agente. Si el API externo alguna vez agrega un filtro real por Market Center, esto se puede simplificar a una sola llamada.
 
+## Perfiles y módulos del panel (Usuarios)
+
+Solo hay dos perfiles: `admin` (acceso a todo el panel, sin excepción) y `marketing` (acceso solo a los módulos que se le asignen). Los módulos asignables viven en `src/features/admin/users/schemas/user.schema.ts` (`moduleOptions`) y `types.ts` (`ModuleKey`) — hoy: `homepage`, `blog`, `seo`, `marketing` (estos dos últimos ya se dejaron listados aunque sus páginas todavía no existen; cuando se construyan, sus nav items en `nav-items.config.ts` solo necesitan descomentarse con su `moduleKey` ya puesto). `usuarios` **nunca** es un módulo asignable — sigue siendo exclusivo de `admin` vía `adminOnly: true` en `AdminNavItem`, igual que antes.
+
+`UserForm.tsx` (`src/features/admin/users/components/`) muestra el selector de módulos (checkboxes) SOLO cuando el perfil elegido es `marketing`; con `admin` se oculta y se explica que ya tiene acceso a todo. `SidebarNavigation.tsx` filtra `adminNavItems` con la misma regla: `adminOnly` → solo admin; `moduleKey` → admin, o marketing si `useMyProfile()` trae ese módulo en `modules`. Esto es solo para ocultar/mostrar enlaces — la restricción real la hace el backend (`ProfilesGuard` + `@RequireModule`, ver `backend-kw/CLAUDE.md`); no hay guard de página en el cliente, mismo patrón que ya existía para Usuarios (si alguien entra directo a una URL sin el módulo, el backend responde 403 y la página muestra el error genérico de carga fallida).
+
+Si agregas un módulo nuevo, mantenlo alineado en 3 lugares: `ModuleKey` en `backend-kw` (`src/users/enums/module-key.enum.ts`), `ModuleKey`/`moduleOptions` aquí, y el `moduleKey` del nav item correspondiente.
+
 ## Identidad visual
 
 Definida en `UI.jpeg` (raíz del proyecto `KW-MEXICO`, fuera de este repo):

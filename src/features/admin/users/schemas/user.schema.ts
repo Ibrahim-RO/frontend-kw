@@ -3,8 +3,14 @@ import z from 'zod'
 export const userProfileOptions = [
   { value: 'admin', label: 'Administrador' },
   { value: 'marketing', label: 'Marketing' },
+] as const
+
+// Debe reflejar backend-kw's ModuleKey (src/users/enums/module-key.enum.ts).
+export const moduleOptions = [
+  { value: 'homepage', label: 'Homepage' },
+  { value: 'blog', label: 'Blog' },
   { value: 'seo', label: 'SEO' },
-  { value: 'usuario', label: 'Usuario' },
+  { value: 'marketing', label: 'Marketing' },
 ] as const
 
 const baseUserFields = {
@@ -13,7 +19,8 @@ const baseUserFields = {
   surname_name: z.string().min(1, 'El apellido materno es obligatorio').max(60, 'Máximo 60 caracteres'),
   email: z.email('Correo no válido'),
   phone: z.string().min(1, 'El teléfono es obligatorio'),
-  profile: z.enum(['admin', 'marketing', 'seo', 'usuario'], 'Selecciona un perfil'),
+  profile: z.enum(['admin', 'marketing'], 'Selecciona un perfil'),
+  modules: z.array(z.enum(['homepage', 'blog', 'seo', 'marketing'])).default([]),
 }
 
 export const createUserForm = z.object({

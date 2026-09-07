@@ -12,6 +12,7 @@ export type CreateUserPayload = {
   email: string
   phone: string
   profile: AdminUser['profile']
+  modules: AdminUser['modules']
   password: string
 }
 

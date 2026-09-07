@@ -13,9 +13,9 @@ import {
   FormSubmit,
   FormError,
 } from '@/src/shared/components/forms'
-import { createUserForm, editUserForm, userProfileOptions } from '../schemas/user.schema'
+import { createUserForm, editUserForm, moduleOptions, userProfileOptions } from '../schemas/user.schema'
 import { useCreateUser, useUpdateUser } from '../hooks/useUserMutations'
-import type { AdminUser } from '../types'
+import type { AdminUser, ModuleKey } from '../types'
 
 type UserFormProps =
   | { mode: 'create'; user?: undefined }
@@ -28,6 +28,8 @@ export function UserForm({ mode, user }: UserFormProps) {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -37,19 +39,39 @@ export function UserForm({ mode, user }: UserFormProps) {
       surname_name: user?.surname_name ?? '',
       email: user?.email ?? '',
       phone: user?.phone ?? '',
-      profile: user?.profile ?? 'usuario',
+      profile: user?.profile ?? 'marketing',
+      modules: user?.modules ?? [],
       password: '',
     },
   })
+
+  const profile = watch('profile')
+  const modules = watch('modules') ?? []
+  const isMarketing = profile === 'marketing'
+
+  const toggleModule = (module: ModuleKey, checked: boolean) => {
+    setValue('modules', checked ? [...modules, module] : modules.filter((m) => m !== module))
+  }
 
   const createMutation = useCreateUser()
   const updateMutation = useUpdateUser(user?.user_id ?? '')
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
-  const onSubmit = (values: { name: string; last_name: string; surname_name: string; email: string; phone: string; profile: string; password?: string }) => {
+  const onSubmit = (values: {
+    name: string
+    last_name: string
+    surname_name: string
+    email: string
+    phone: string
+    profile: string
+    modules: string[]
+    password?: string
+  }) => {
+    const modules = values.profile === 'marketing' ? (values.modules as ModuleKey[]) : []
+
     if (mode === 'create') {
       createMutation.mutate(
-        { ...values, profile: values.profile as AdminUser['profile'], password: values.password ?? '' },
+        { ...values, profile: values.profile as AdminUser['profile'], modules, password: values.password ?? '' },
         {
           onSuccess: () => {
             toast.success('Usuario creado')
@@ -61,7 +83,7 @@ export function UserForm({ mode, user }: UserFormProps) {
       return
     }
 
-    const payload = { ...values, profile: values.profile as AdminUser['profile'] }
+    const payload = { ...values, profile: values.profile as AdminUser['profile'], modules }
     if (!payload.password) delete payload.password
 
     updateMutation.mutate(payload, {
@@ -132,6 +154,33 @@ export function UserForm({ mode, user }: UserFormProps) {
           {errors.profile && <FormError>{errors.profile.message}</FormError>}
         </FormField>
       </div>
+
+      {isMarketing ? (
+        <FormField>
+          <FormLabel>Módulos con acceso</FormLabel>
+          <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+            {moduleOptions.map((option) => (
+              <label
+                key={option.value}
+                className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm text-foreground has-checked:border-primary has-checked:bg-primary/5"
+              >
+                <input
+                  type="checkbox"
+                  className="size-4 accent-primary"
+                  checked={modules.includes(option.value)}
+                  onChange={(event) => toggleModule(option.value, event.target.checked)}
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+          {errors.modules && <FormError>{errors.modules.message}</FormError>}
+        </FormField>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          El perfil Administrador tiene acceso a todos los módulos del panel.
+        </p>
+      )}
 
       <div className="max-w-sm">
         <FormField>
