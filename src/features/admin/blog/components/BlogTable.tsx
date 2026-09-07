@@ -5,7 +5,7 @@ import { Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useBlogPosts } from '../hooks/useBlogPosts'
 import { useDeleteBlogPost } from '../hooks/useBlogMutations'
-import { BlogStatusBadge } from './BlogStatusBadge'
+import { BlogPublishSwitch } from './BlogPublishSwitch'
 import { ConfirmDialog } from '@/src/shared/components/ConfirmDialog'
 
 function formatDate(value: string) {
@@ -65,7 +65,7 @@ export function BlogTable() {
                 {post.author.name} {post.author.last_name}
               </td>
               <td className="px-4 py-3">
-                <BlogStatusBadge status={post.status} />
+                <BlogPublishSwitch post={post} />
               </td>
               <td className="px-4 py-3 text-muted-foreground">{formatDate(post.published_at)}</td>
               <td className="px-4 py-3">
