@@ -36,7 +36,7 @@ Todo formulario usa `zod` (esquema en `schemas/`) + `react-hook-form`, reutiliza
 
 **No se usa shadcn/ui** — no generes ni instales componentes de shadcn aunque la dependencia esté en `package.json`. Los componentes reutilizables genéricos viven en `src/shared/components/`; revisa ahí antes de crear uno nuevo. Ya existen, entre otros: `ConfirmDialog`, `Pagination` (+ `src/shared/lib/pagination.ts` para `getPageNumbers`), `LuxuryRibbon`.
 
-Para overlays accesibles (modal, menú, dropdown) sí se usa `@base-ui/react` (ej. `ConfirmDialog` usa `alert-dialog`, `UserMenu` usa `menu`) — es la excepción a la regla de "no shadcn", no un componente visual con estilos propios que haya que evitar.
+Para overlays/controles accesibles (modal, menú, dropdown, switch) sí se usa `@base-ui/react` (ej. `ConfirmDialog` usa `alert-dialog`, `UserMenu` usa `menu`, `BlogForm` usa `switch` para publicar/despublicar) — es la excepción a la regla de "no shadcn", no un componente visual con estilos propios que haya que evitar. Es headless (sin estilos propios): el estado se lee con selectores de atributo Tailwind `data-[checked]:...` (no hay `data-state`, es `data-checked`/`data-unchecked`).
 
 Notificaciones/errores al usuario: `sonner` (`src/shared/components/sonner.tsx`), no `alert()` ni notificaciones hechas a mano.
 
@@ -61,6 +61,8 @@ El blog tiene dos mitades separadas, como cualquier recurso con lectura pública
 `src/shared/components/ImageUpload.tsx` es el componente de subida de imágenes reutilizable (recibe `endpoint`) — lo usan tanto `admin/blog` como (vía su propia copia local histórica) `admin/homepage`; para una sección nueva que necesite subir imágenes, usa el componente compartido en vez de duplicarlo otra vez.
 
 El editor de contenido (`RichTextEditor.tsx` + `RichTextToolbar.tsx`, Tiptap) soporta encabezados H2/H3, cita, línea divisoria, enlaces e imágenes (`ImageInsertButton.tsx`, sube archivo o pega URL contra `/api/admin/blog/images`). Los **H2** que el redactor use dentro del contenido son los que generan automáticamente la tabla de contenidos en la página pública del post (`lib/content.ts` → `withHeadingIds`) — no hay un campo aparte para "el índice", se arma solo a partir de los encabezados.
+
+`BlogForm.tsx` (crear y editar) trae su propia cabecera `sticky top-0` con el título ("Nueva entrada de blog"/"Editar entrada") y un switch de Publicado/Borrador (`@base-ui/react/switch`) al lado — así no hay que bajar hasta el fondo del formulario para publicar/despublicar, ni pasar por una lista de opciones. El switch maneja `status` como parte del mismo `react-hook-form` del formulario (ya no es un `useState` aparte): al crear, `CreateBlogDto` ahora acepta `status` opcional (`borrador`/`publicado`) para poder publicar directo desde la creación — ver `backend-kw/CLAUDE.md`. `BlogCreatePage.tsx`/`BlogEditPage.tsx` quedaron delgados (solo cargan datos/loading/error); el título y el back-link que antes tenían ahora viven dentro de `BlogForm` porque comparten la barra sticky.
 
 ## Búsqueda de agentes sin restricción de Market Center
 
