@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useMyProfile } from '@/src/features/admin/profile/hooks/useMyProfile'
-import { adminNavItems } from '../config/nav-items.config'
+import { adminNavItems, canAccessNavItem } from '../config/nav-items.config'
 
 export function SidebarNavigation() {
   const pathname = usePathname()
@@ -15,11 +15,7 @@ export function SidebarNavigation() {
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
       {adminNavItems
-        .filter((item) => {
-          if (item.adminOnly) return isAdmin
-          if (item.moduleKey) return isAdmin || modules.includes(item.moduleKey)
-          return true
-        })
+        .filter((item) => canAccessNavItem(item, isAdmin, modules))
         .map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
 

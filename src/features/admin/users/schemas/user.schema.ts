@@ -9,8 +9,6 @@ export const userProfileOptions = [
 export const moduleOptions = [
   { value: 'homepage', label: 'Homepage' },
   { value: 'blog', label: 'Blog' },
-  { value: 'seo', label: 'SEO' },
-  { value: 'marketing', label: 'Marketing' },
 ] as const
 
 // Sub-permisos de las 3 pestañas del editor de Homepage (HomepageEditor.tsx)
@@ -21,15 +19,7 @@ export const homepageSubmoduleOptions = [
   { value: 'homepage:code', label: 'Head y Body' },
 ] as const
 
-const moduleKeyValues = [
-  'homepage',
-  'homepage:sections',
-  'homepage:seo',
-  'homepage:code',
-  'blog',
-  'seo',
-  'marketing',
-] as const
+const moduleKeyValues = ['homepage', 'homepage:sections', 'homepage:seo', 'homepage:code', 'blog'] as const
 
 const baseUserFields = {
   name: z.string().min(1, 'El nombre es obligatorio').max(60, 'Máximo 60 caracteres'),

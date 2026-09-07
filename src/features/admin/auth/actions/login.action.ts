@@ -43,7 +43,21 @@ export async function loginAction(input: unknown) {
     }
 
     await createSession(token)
-    return { success: true as const }
+
+    // El front decide a dónde mandar al usuario según su perfil/módulos
+    // (ver getDefaultAdminRoute) — hace falta pedir /users/me aquí porque
+    // el login solo devuelve el token, no el usuario.
+    const meResponse = await fetch(`${apiUrl}/users/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    })
+    const me = meResponse.ok ? ((await meResponse.json()) as { data?: { profile?: string; modules?: string[] } }) : null
+
+    return {
+      success: true as const,
+      profile: me?.data?.profile ?? 'marketing',
+      modules: me?.data?.modules ?? [],
+    }
   } catch {
     return { success: false as const, message: 'No se pudo conectar con el backend' }
   }

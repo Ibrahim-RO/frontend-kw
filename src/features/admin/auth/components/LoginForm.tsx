@@ -8,6 +8,8 @@ import { loginForm } from '../schemas';
 import { useMutation } from '@tanstack/react-query';
 import { loginAction } from '../actions/login.action';
 import { useRouter } from 'next/navigation';
+import { getDefaultAdminRoute } from '@/src/features/admin/layout/config/nav-items.config';
+import type { ModuleKey } from '@/src/features/admin/users/types';
 
 
 export default function LoginForm() {
@@ -32,7 +34,7 @@ export default function LoginForm() {
         return
       }
       toast.success('Inicio de sesión satisfactorio');
-      router.replace('/admin/usuarios')
+      router.replace(getDefaultAdminRoute(result.profile, result.modules as ModuleKey[]))
     }
   })
 
