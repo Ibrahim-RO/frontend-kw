@@ -24,6 +24,8 @@ No mezcles la lógica de una feature dentro de otra ni la pongas directo en `app
 
 Prioridad: **react-query** para todo lo que se pueda manejar desde el cliente. Usa Server Actions únicamente cuando react-query no sea viable (ej. mutaciones que dependen de cookies/sesión del servidor, como login/logout).
 
+El `QueryClient` (`ProviderReactQuery.tsx`) es un singleton en memoria del navegador — sobrevive a cerrar sesión y volver a entrar con otra cuenta, porque `logoutAction`/`loginAction` son Server Actions sin acceso a él. Por eso cerrar sesión (`useLogout`, `src/features/admin/auth/hooks/`) y un login exitoso (`LoginForm.tsx`) hacen `queryClient.clear()` antes de navegar — si no, el panel muestra datos cacheados (perfil, listas) del usuario anterior hasta que expire el `staleTime` de cada query. Cualquier flujo nuevo que termine o empiece una sesión debe hacer lo mismo.
+
 Cuando un recurso tiene hook de detalle (`useX(id)`) y mutación que lo invalida (`useUpdateX(id)` → `invalidateQueries({ queryKey: ['x', id] })`), el `id` de ambas queryKeys tiene que ser del mismo tipo (`String(id)` en los dos lados es lo más seguro) — un id `string` (típico de params de ruta) vs `number` (típico de un campo de la entidad, ej. `user.user_id`) arma keys distintas para react-query y la invalidación no pega, dejando datos viejos en caché aunque el backend ya se haya actualizado. Pasó con `useUser`/`useUpdateUser` (`src/features/admin/users/hooks/`), ya corregido ahí.
 
 ## Formularios

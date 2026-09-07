@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { LogOut } from 'lucide-react'
-import { logoutAction } from '@/src/features/admin/auth/actions/logout.action'
 import { adminFooterNavItems } from '../config/nav-items.config'
+import { LogoutButton } from './LogoutButton'
 
 export function SidebarFooter() {
   return (
@@ -18,15 +17,7 @@ export function SidebarFooter() {
           </Link>
         ))}
 
-        <form action={logoutAction}>
-          <button
-            type="submit"
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          >
-            <LogOut className="size-4 shrink-0" />
-            Cerrar sesión
-          </button>
-        </form>
+        <LogoutButton />
       </nav>
     </div>
   )

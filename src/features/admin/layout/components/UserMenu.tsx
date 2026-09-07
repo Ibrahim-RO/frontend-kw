@@ -4,10 +4,11 @@ import Link from 'next/link'
 import { CircleUserRound, LogOut, UserCog } from 'lucide-react'
 import { Menu } from '@base-ui/react/menu'
 import { useMyProfile } from '@/src/features/admin/profile/hooks/useMyProfile'
-import { logoutAction } from '@/src/features/admin/auth/actions/logout.action'
+import { useLogout } from '@/src/features/admin/auth/hooks/useLogout'
 
 export function UserMenu() {
   const { data: profile } = useMyProfile()
+  const logout = useLogout()
   const fullName = profile ? `${profile.name} ${profile.last_name}` : 'Cuenta'
 
   return (
@@ -36,9 +37,7 @@ export function UserMenu() {
             <div className="my-1 h-px bg-border" />
             <Menu.Item
               className="flex cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-sm text-destructive outline-none transition-colors data-[highlighted]:bg-destructive/10"
-              onClick={() => {
-                void logoutAction()
-              }}
+              onClick={logout}
             >
               <LogOut className="size-4" />
               Cerrar sesión

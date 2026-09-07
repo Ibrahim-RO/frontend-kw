@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner'
 import { loginForm } from '../schemas';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { loginAction } from '../actions/login.action';
 import { useRouter } from 'next/navigation';
 import { getDefaultAdminRoute } from '@/src/features/admin/layout/config/nav-items.config';
@@ -14,7 +14,8 @@ import type { ModuleKey } from '@/src/features/admin/users/types';
 
 export default function LoginForm() {
   const router = useRouter();
-  
+  const queryClient = useQueryClient();
+
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginForm),
     defaultValues: {
@@ -34,6 +35,10 @@ export default function LoginForm() {
         return
       }
       toast.success('Inicio de sesión satisfactorio');
+      // Por si se llegó al login sin pasar por "Cerrar sesión" (JWT vencido,
+      // cookie borrada a mano, etc.) — igual que useLogout, evita que quede
+      // cacheado el perfil/datos de quien haya usado el navegador antes.
+      queryClient.clear();
       router.replace(getDefaultAdminRoute(result.profile, result.modules as ModuleKey[]))
     }
   })
