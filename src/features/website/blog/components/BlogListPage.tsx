@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { PaginatedBlogPosts } from '../types'
@@ -8,9 +9,16 @@ export function BlogListPage({ posts }: { posts: PaginatedBlogPosts }) {
 
   return (
     <main className="bg-neutral-50 pb-20">
-      <section className="bg-kw-secondary py-16 sm:py-20">
+      <section className="relative bg-kw-secondary py-16 sm:py-20">
+        <Image
+          src="/KW-RED.png"
+          alt=""
+          width={778}
+          height={623}
+          className="pointer-events-none absolute top-6 right-6 h-10 w-auto select-none sm:h-12"
+          aria-hidden="true"
+        />
         <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
-          <p className="mb-3 text-xs font-bold tracking-[0.3em] text-kw-primary uppercase">KW México</p>
           <h1 className="font-heading text-4xl font-extrabold text-white sm:text-5xl">Blog</h1>
           <p className="mt-4 text-base text-white/70 sm:text-lg">
             Historias, guías y tendencias del mercado inmobiliario de la mano de nuestros agentes.

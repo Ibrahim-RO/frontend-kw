@@ -10,7 +10,7 @@ export default function AboutSection({ content }: { content?: HomepageSection })
           <h2 id="about-title" className="font-heading text-4xl font-extrabold tracking-tight text-kw-secondary sm:text-5xl lg:text-6xl">
             <span className="inline-flex flex-wrap items-center">
               <span className="mr-3">{String(data?.title || '¿QUÉ ES')}</span>
-              <Image src="/KW-RED.png" alt="KW" width={778} height={515} className="h-[0.75em] w-auto" />
+              <Image src="/KW-RED.png" alt="KW" width={778} height={623} className="h-[0.9em] w-auto" />
               <span className="text-kw-primary">?</span>
             </span>
           </h2>

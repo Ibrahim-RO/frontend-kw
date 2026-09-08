@@ -36,7 +36,7 @@ export default function AwardsSection({ content }: { content?: HomepageSection }
   return (
     <section data-aos-skip aria-labelledby="awards-title" className="overflow-hidden border-y border-white/10 bg-kw-secondary py-14 sm:py-16">
       <div className="mx-auto mb-9 max-w-7xl px-6 text-center lg:px-8">
-        <h2 id="awards-title" className="font-heading text-3xl font-extrabold text-white sm:text-4xl">{content?.title || 'Reconocimientos internacionales'}</h2>
+        <h2 id="awards-title" className="font-heading text-3xl font-extrabold text-white sm:text-4xl">{content?.title || 'Reconocimientos Internacionales'}</h2>
         {content?.subtitle && <p className="mx-auto mt-3 max-w-3xl text-white/60">{content.subtitle}</p>}
       </div>
       <div className={styles.viewport}>

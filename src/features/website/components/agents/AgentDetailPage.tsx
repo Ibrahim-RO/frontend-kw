@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Bath, BedDouble, Building2, Mail, MapPin, Phone, Ruler } from 'lucide-react'
 import type { AgentPropertiesResponse, Property } from '../../properties/types'
@@ -71,7 +72,22 @@ export default function AgentDetailPage({ response }: { response: AgentPropertie
                 <section className="relative mt-7 overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-lg">
                     {agent.Luxury === 1 && <LuxuryRibbon />}
                     <div className="absolute inset-x-0 top-0 h-2 bg-kw-primary" />
-                    <div className="absolute -right-8 -top-20 select-none font-heading text-[15rem] font-black leading-none text-neutral-100" aria-hidden="true">KW</div>
+                    {/* Cuando el agente es Luxury, el listón diagonal (LuxuryRibbon,
+                        top-5 -right-11 w-40 rotado 45°) ocupa justo esta esquina. Su
+                        silueta rotada alcanza como máximo ~100px desde el borde derecho
+                        (envolvente de un rectángulo de 160x24px rotado 45°), así que se
+                        recorre el logo a right-28 (112px, con margen) solo en ese caso —
+                        misma altura (top-5) que el resto, nomás se mueve en horizontal.
+                        z-30 además lo deja siempre por encima del listón (z-20) por si
+                        llegan a rozarse. */}
+                    <Image
+                        src="/KW-RED.png"
+                        alt=""
+                        width={778}
+                        height={623}
+                        className={`pointer-events-none absolute top-5 z-30 h-9 w-auto select-none sm:h-11 ${agent.Luxury === 1 ? 'right-28' : 'right-5'}`}
+                        aria-hidden="true"
+                    />
 
                     <div className="relative flex flex-col items-center gap-7 px-6 py-10 text-center md:flex-row md:px-10 md:py-12 md:text-left lg:px-14">
                         {agent.Agent_Photo_url ? (
