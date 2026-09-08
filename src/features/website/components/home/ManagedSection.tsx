@@ -10,10 +10,19 @@ import Hero from './Hero'
 import JoinSection from './JoinSection'
 import ProspectingCtaSection from './ProspectingCtaSection'
 import { sectionData } from '@/src/features/admin/homepage/section-defaults'
+import { isEventUrl } from '@/src/features/admin/homepage/events'
 
 export function ManagedSection({ section }: { section: HomepageSection; index?: number }) {
   const content = { ...section, ...sectionData(section.id, section.data), data: sectionData(section.id, section.data) } as HomepageSection
   switch (section.id) {
+    case 'events': {
+      const text = section.title.trim()
+      const href = section.buttonUrl?.trim() ?? ''
+      if (!section.visible || !text || !isEventUrl(href)) return null
+      return <section id="eventos" aria-label="Eventos" className="bg-kw-primary px-5 py-3 text-center text-white">
+        <a href={href} className="break-words text-sm font-medium underline underline-offset-4 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4">{text}</a>
+      </section>
+    }
     case 'hero': return <Hero content={content}/>
     case 'awards': return <AwardsSection content={content}/>
     case 'properties': return <FeaturedPropertiesSection content={content}/>

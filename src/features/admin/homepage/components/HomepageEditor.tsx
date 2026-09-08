@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner'
 
 import { sectionData } from '../section-defaults'
+import { isEventUrl, withEventsFirst } from '../events'
 import type { HomepageSection, HomepageSettings } from '../types'
 import { useMyProfile } from '@/src/features/admin/profile/hooks/useMyProfile'
 
@@ -43,7 +44,7 @@ export function HomepageEditor({
 }: {
   initial: HomepageSettings
 }) {
-  const [doc, setDoc] = useState(initial.draft)
+  const [doc, setDoc] = useState(() => ({ ...initial.draft, sections: withEventsFirst(initial.draft.sections) }))
   const [tab, setTab] = useState<'content' | 'seo' | 'code'>('content')
   const [busy, setBusy] = useState(false)
 
@@ -66,6 +67,11 @@ export function HomepageEditor({
     }))
 
   async function save(url: string, method: 'PATCH' | 'POST') {
+    const events = doc.sections.find((section) => section.id === 'events')
+    if (events?.visible && (!events.title.trim() || !isEventUrl(events.buttonUrl?.trim() ?? ''))) {
+      toast.error('Eventos requiere un texto y un enlace válido (https:// o /ruta).')
+      return
+    }
     setBusy(true)
 
     try {
@@ -380,7 +386,13 @@ function SectionEditor({
 
   let editor: React.ReactNode
 
-  if (section.id === 'hero') {
+  if (section.id === 'events') {
+    editor = <div className="grid gap-5 md:grid-cols-2">
+      <Text label="Texto del evento" value={section.title} onChange={(title) => onChange({ ...section, title })} />
+      <Text label="Enlace de redireccionamiento" value={section.buttonUrl} onChange={(buttonUrl) => onChange({ ...section, buttonUrl })} />
+      <p className="text-sm text-muted-foreground md:col-span-2">Nivel 0: siempre antes del hero. El texto será el enlace al evento.</p>
+    </div>
+  } else if (section.id === 'hero') {
     editor = fields([
       ['title', 'Primera línea'],
       ['titleAccent', 'Línea destacada'],
@@ -568,7 +580,7 @@ function SectionEditor({
       <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-muted/40 px-5 py-4 sm:px-6">
         <div className="flex items-center gap-3">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-            {index + 1}
+            {index}
           </span>
 
           <div>
@@ -578,7 +590,7 @@ function SectionEditor({
               </h2>
 
               <span className="rounded-full border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Bloque {index + 1} de {total}
+                Nivel {index} · {total} bloques
               </span>
             </div>
 
