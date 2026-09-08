@@ -18,7 +18,6 @@
   padding-right: 1rem;
 }
 
-.viewport:hover .track,
 .viewport:focus-within .track {
   animation-play-state: paused;
 }

@@ -109,8 +109,12 @@ export default function AgentsSection() {
 
             {nearbyId && nearestMarketCenter && (
                 <div className="flex flex-col items-center justify-between gap-3 rounded-xl border border-kw-primary/20 bg-kw-primary/5 px-4 py-3 text-sm text-kw-secondary sm:flex-row">
-                    <span className="flex items-center gap-2 text-center sm:text-left">
-                        <Navigation size={16} className="shrink-0 text-kw-primary" />
+                    <span className="text-center sm:text-left">
+                        {/* Ícono inline dentro del texto (no flex) para que el párrafo
+                            haga wrap normal palabra por palabra en móvil — con flex,
+                            el ícono y cada fragmento de texto se armaban como cajas
+                            separadas y el wrap salía desordenado. */}
+                        <Navigation size={16} className="mr-1.5 inline-block align-text-bottom text-kw-primary" aria-hidden="true" />
                         Mostrando agentes de <strong>{nearestMarketCenter.Market_Center}</strong>, el Market Center más cercano a ti
                         {nearestDistanceKm !== null && ` (a ${nearestDistanceKm < 10 ? nearestDistanceKm.toFixed(1) : Math.round(nearestDistanceKm)} km)`}.
                     </span>

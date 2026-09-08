@@ -1,16 +1,25 @@
 import type { Metadata } from "next";
-import { Rubik, Roboto } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/src/shared/components/sonner";
 import ProviderReactQuery from "@/src/shared/components/ProviderReactQuery";
 
-// Roboto = alternativa web de Helvetica Neue LT Std (cuerpo/texto de apoyo).
-// Rubik = alternativa web de DIN Next LT Pro Heavy Condensed (titulares).
-// Ambas indicadas por el cliente como fuentes seguras para web cuando las
-// tipografías de marca no están disponibles como Google Fonts.
-const roboto = Roboto({ subsets: ['latin'], variable: '--font-sans' });
-const rubik = Rubik({ subsets: ['latin'], variable: '--font-heading' });
+// Helvetica Neue LT Std con licencia web (archivos entregados por el
+// cliente, convertidos a woff2 en src/fonts/helvetica-neue/). Es la
+// tipografía única del sitio: cuerpo, encabezados, navbar y toda sección
+// usan esta misma familia — el cliente pidió exactamente esta, sin
+// alternativas ni sustitutos.
+const helveticaNeue = localFont({
+  src: [
+    { path: "../src/fonts/helvetica-neue/HelveticaNeueLTStd-Light.woff2", weight: "300", style: "normal" },
+    { path: "../src/fonts/helvetica-neue/HelveticaNeueLTStd-Roman.woff2", weight: "400", style: "normal" },
+    { path: "../src/fonts/helvetica-neue/HelveticaNeueLTStd-Medium.woff2", weight: "500 600", style: "normal" },
+    { path: "../src/fonts/helvetica-neue/HelveticaNeueLTStd-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-helvetica",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", "font-sans", roboto.variable, rubik.variable)}
+      className={cn("h-full", "antialiased", "font-sans", helveticaNeue.variable)}
     >
       <body className="min-h-full flex flex-col">
         <ProviderReactQuery>

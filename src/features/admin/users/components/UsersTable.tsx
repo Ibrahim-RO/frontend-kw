@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { useUsers } from '../hooks/useUsers'
 import { useDeleteUser } from '../hooks/useUserMutations'
 import { UserProfileBadge } from './UserProfileBadge'
+import { moduleOptions } from '../schemas/user.schema'
 import { ConfirmDialog } from '@/src/shared/components/ConfirmDialog'
 import { Pagination } from '@/src/shared/components/Pagination'
 
@@ -61,6 +62,7 @@ export function UsersTable() {
               <th className="px-4 py-3 font-medium">Correo</th>
               <th className="px-4 py-3 font-medium">Teléfono</th>
               <th className="px-4 py-3 font-medium">Perfil</th>
+              <th className="px-4 py-3 font-medium">Módulos</th>
               <th className="px-4 py-3 font-medium text-right">Acciones</th>
             </tr>
           </thead>
@@ -74,6 +76,18 @@ export function UsersTable() {
                   <td className="px-4 py-3 text-muted-foreground">{user.phone}</td>
                   <td className="px-4 py-3">
                     <UserProfileBadge profile={user.profile} />
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {user.profile === 'admin'
+                      ? 'Todos'
+                      : (() => {
+                          const topLevel = user.modules.filter((module) => !module.includes(':'))
+                          return topLevel.length > 0
+                            ? topLevel
+                                .map((module) => moduleOptions.find((option) => option.value === module)?.label ?? module)
+                                .join(', ')
+                            : '—'
+                        })()}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">

@@ -12,6 +12,7 @@ export type CreateBlogPayload = {
   content: string
   featured_image_url?: string
   extra_authors?: string
+  status?: BlogPost['status']
 }
 
 export type UpdateBlogPayload = Partial<CreateBlogPayload> & {

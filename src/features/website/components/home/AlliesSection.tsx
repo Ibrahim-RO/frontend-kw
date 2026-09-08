@@ -41,7 +41,11 @@ export default function AlliesSection({ content }: { content?: HomepageSection }
     <section id="aliados" className="overflow-hidden bg-kw-secondary py-16 sm:py-20" aria-labelledby="allies-title">
       <div className="mx-auto mb-12 max-w-7xl px-6 text-center lg:px-8">
         <h2 id="allies-title" className="font-heading text-3xl font-extrabold uppercase text-white sm:text-4xl lg:text-5xl">
-          {String(data?.title || 'Aliados')} <span className="text-kw-primary">{String(data?.titleAccent || 'KW')}</span> {String(data?.titleSuffix || 'México')}
+          <span className="inline-flex flex-wrap items-center justify-center gap-x-3">
+            {String(data?.title || 'Aliados')}
+            <Image src="/KW-RED.png" alt="KW" width={778} height={623} className="h-[0.9em] w-auto" />
+            {String(data?.titleSuffix || 'México')}
+          </span>
         </h2>
         <p className="mx-auto mt-5 max-w-3xl text-base leading-7 text-white/60 sm:text-lg">
           {content?.subtitle || content?.body || 'Conecta con la red inmobiliaria más grande de México. Nuestros aliados son fundamentales para el ecosistema KW.'}

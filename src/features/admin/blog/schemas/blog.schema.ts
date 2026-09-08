@@ -7,6 +7,7 @@ export const blogForm = z.object({
   content: z.string().min(1, 'El contenido es obligatorio'),
   featured_image_url: z.string().optional(),
   extra_authors: z.string().optional(),
+  status: z.enum(['borrador', 'publicado']),
 })
 
 export type BlogFormValues = z.infer<typeof blogForm>

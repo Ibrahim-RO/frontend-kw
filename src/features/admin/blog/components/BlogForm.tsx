@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import { Switch } from '@base-ui/react/switch'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
 import {
   Form,
   FormField,
@@ -30,21 +32,9 @@ function toDateInputValue(value?: string) {
   return value.slice(0, 10)
 }
 
-function statusButtonClassName(active: boolean) {
-  return cn(
-    'rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
-    active
-      ? 'border-primary bg-primary/10 text-primary'
-      : 'border-input text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-  )
-}
-
 export function BlogForm({ mode, blogPost }: BlogFormProps) {
   const router = useRouter()
   const [slugTouched, setSlugTouched] = useState(mode === 'edit')
-  const [status, setStatus] = useState<'borrador' | 'publicado'>(
-    blogPost?.status === 'publicado' ? 'publicado' : 'borrador',
-  )
 
   const {
     register,
@@ -63,11 +53,13 @@ export function BlogForm({ mode, blogPost }: BlogFormProps) {
       content: blogPost?.content ?? '',
       featured_image_url: blogPost?.featured_image_url ?? '',
       extra_authors: blogPost?.extra_authors ?? '',
+      status: blogPost?.status === 'publicado' ? 'publicado' : 'borrador',
     },
   })
 
   const title = watch('title')
   const featuredImageUrl = watch('featured_image_url')
+  const status = watch('status')
 
   useEffect(() => {
     if (slugTouched) return
@@ -97,20 +89,47 @@ export function BlogForm({ mode, blogPost }: BlogFormProps) {
       return
     }
 
-    updateMutation.mutate(
-      { ...payload, status },
-      {
-        onSuccess: () => {
-          toast.success('Cambios guardados')
-          router.push('/admin/blog')
-        },
-        onError: () => toast.error('No se pudieron guardar los cambios'),
+    updateMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success('Cambios guardados')
+        router.push('/admin/blog')
       },
-    )
+      onError: () => toast.error('No se pudieron guardar los cambios'),
+    })
   }
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-6 border-b border-border bg-background/95 px-4 py-4 backdrop-blur-sm sm:-mx-6 sm:-mt-6 sm:px-6 lg:-mx-8 lg:-mt-8 lg:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <Link
+              href="/admin/blog"
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="size-4" />
+              Volver al blog
+            </Link>
+            <h1 className="mt-1 font-heading text-xl font-semibold text-foreground">
+              {mode === 'create' ? 'Nueva entrada de blog' : 'Editar entrada'}
+            </h1>
+          </div>
+
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-card px-3.5 py-2 shadow-sm">
+            <span className="text-sm font-medium text-foreground">
+              {status === 'publicado' ? 'Publicado' : 'Borrador'}
+            </span>
+            <Switch.Root
+              checked={status === 'publicado'}
+              onCheckedChange={(checked) => setValue('status', checked ? 'publicado' : 'borrador')}
+              className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-input bg-muted transition-colors data-[checked]:border-primary data-[checked]:bg-primary"
+            >
+              <Switch.Thumb className="block size-4 translate-x-1 rounded-full bg-background shadow transition-transform data-[checked]:translate-x-5" />
+            </Switch.Root>
+          </label>
+        </div>
+      </div>
+
       <FormField>
         <FormLabel htmlFor="title" required>
           Título
@@ -158,28 +177,6 @@ export function BlogForm({ mode, blogPost }: BlogFormProps) {
         />
         {errors.featured_image_url && <FormError>{errors.featured_image_url.message}</FormError>}
       </FormField>
-
-      {mode === 'edit' && (
-        <FormField>
-          <FormLabel>Estado</FormLabel>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setStatus('borrador')}
-              className={statusButtonClassName(status === 'borrador')}
-            >
-              Borrador
-            </button>
-            <button
-              type="button"
-              onClick={() => setStatus('publicado')}
-              className={statusButtonClassName(status === 'publicado')}
-            >
-              Publicado
-            </button>
-          </div>
-        </FormField>
-      )}
 
       <FormField>
         <FormLabel required>Contenido</FormLabel>

@@ -25,7 +25,7 @@ export function useUpdateUser(id: number | string) {
     mutationFn: (payload: UpdateUserPayload) => updateUser(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
-      queryClient.invalidateQueries({ queryKey: ['admin-user', id] })
+      queryClient.invalidateQueries({ queryKey: ['admin-user', String(id)] })
     },
   })
 }

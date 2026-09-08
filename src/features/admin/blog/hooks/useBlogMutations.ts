@@ -25,7 +25,7 @@ export function useUpdateBlogPost(id: number | string) {
     mutationFn: (payload: UpdateBlogPayload) => updateBlogPost(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blog-posts'] })
-      queryClient.invalidateQueries({ queryKey: ['blog-post', id] })
+      queryClient.invalidateQueries({ queryKey: ['blog-post', String(id)] })
     },
   })
 }

@@ -1,4 +1,9 @@
-export type UserProfileRole = 'admin' | 'marketing' | 'seo' | 'usuario'
+export type UserProfileRole = 'admin' | 'marketing'
+
+// Módulos del panel asignables a un usuario con perfil "marketing". Los 3
+// `homepage:*` son sub-permisos de las pestañas del editor de Homepage y
+// solo importan si el usuario también trae "homepage".
+export type ModuleKey = 'homepage' | 'homepage:sections' | 'homepage:seo' | 'homepage:code' | 'blog'
 
 export type AdminUser = {
   user_id: number
@@ -10,6 +15,7 @@ export type AdminUser = {
   avatar_url?: string | null
   status: boolean
   profile: UserProfileRole
+  modules: ModuleKey[]
   created_at: string
   updated_at: string
 }
