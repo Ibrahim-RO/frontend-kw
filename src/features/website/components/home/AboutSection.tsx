@@ -8,12 +8,16 @@ export default function AboutSection({ content }: { content?: HomepageSection })
       <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-8">
         <div>
           <h2 id="about-title" className="font-heading text-4xl font-extrabold tracking-tight text-kw-secondary sm:text-5xl lg:text-6xl">
-            {String(data?.title || '¿QUÉ ES')} <span className="text-kw-primary">{String(data?.titleAccent || 'KW?')}</span>
+            <span className="inline-flex flex-wrap items-center">
+              <span className="mr-3">{String(data?.title || '¿QUÉ ES')}</span>
+              <Image src="/KW-RED.png" alt="KW" width={778} height={515} className="h-[0.75em] w-auto" />
+              <span className="text-kw-primary">?</span>
+            </span>
           </h2>
 
           <div className="mt-8 max-w-2xl space-y-8 text-lg leading-8 text-kw-tertiary sm:text-xl">
             <p>
-              <strong className="font-heading font-extrabold text-kw-secondary">{String(data?.lead || 'EMPRESA NÚMERO 1 DE ENTRENAMIENTO')}</strong>, {String(data?.paragraph1 || 'networking, aprendizaje y coaching para agentes inmobiliarios.')}
+              <strong className="font-heading font-extrabold text-kw-secondary">{String(data?.lead || 'Empresa número 1 de entrenamiento')}</strong>, {String(data?.paragraph1 || 'networking, aprendizaje y coaching para agentes inmobiliarios.')}
             </p>
             <p>
               {String(data?.paragraph2 || 'Construye un negocio, no solo un empleo. Usa nuestros entrenamientos, sistemas y modelos probados.')}

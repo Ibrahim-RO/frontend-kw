@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-heading);
-    --font-sans: var(--font-sans);
+    --font-heading: var(--font-helvetica);
+    --font-sans: var(--font-helvetica);
     --color-kw-primary: var(--kw-primary);
     --color-kw-primary-foreground: var(--kw-primary-foreground);
     --color-kw-secondary: var(--kw-secondary);
