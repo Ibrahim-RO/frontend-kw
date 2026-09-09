@@ -93,7 +93,7 @@ export function LocationAutocompleteBar({
       onSubmit={handleSubmit}
       className={`mx-auto flex flex-col gap-3 shadow-2xl sm:flex-row sm:items-center ${
         isLarge
-          ? 'max-w-5xl rounded-3xl bg-kw-secondary/90 p-3 shadow-black/25 backdrop-blur-md sm:rounded-full'
+          ? 'max-w-5xl rounded-3xl bg-white/70 p-3 shadow-black/20 backdrop-blur-xl sm:rounded-full'
           : 'max-w-none rounded-2xl border border-neutral-200 bg-white p-2 shadow-sm sm:rounded-full'
       } ${className ?? ''}`}
       role="search"
@@ -104,7 +104,7 @@ export function LocationAutocompleteBar({
         </label>
         <div className={`flex min-w-0 items-center gap-3 ${isLarge ? 'px-3 sm:px-4' : 'px-3'}`}>
           <Search
-            className={`shrink-0 ${isLarge ? 'text-white/60' : 'text-kw-tertiary'}`}
+            className="shrink-0 text-kw-tertiary"
             size={isLarge ? 26 : 20}
             aria-hidden="true"
           />
@@ -115,10 +115,8 @@ export function LocationAutocompleteBar({
             required
             autoComplete="off"
             placeholder={placeholder}
-            className={`min-w-0 flex-1 bg-transparent outline-none ${
-              isLarge
-                ? 'py-4 text-base text-white placeholder:text-white/55 sm:text-lg'
-                : 'py-3 text-sm text-kw-secondary placeholder:text-kw-tertiary'
+            className={`min-w-0 flex-1 bg-transparent text-kw-secondary outline-none placeholder:text-kw-tertiary ${
+              isLarge ? 'py-4 text-base sm:text-lg' : 'py-3 text-sm'
             }`}
             value={query}
             onChange={(event) => {
@@ -156,10 +154,8 @@ export function LocationAutocompleteBar({
 
       <button
         type="submit"
-        className={`shrink-0 rounded-full bg-kw-primary font-bold text-white transition hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 ${
-          isLarge
-            ? 'px-9 py-4 text-base focus-visible:outline-white sm:px-12'
-            : 'px-6 py-3 text-sm focus-visible:outline-kw-primary'
+        className={`shrink-0 rounded-full bg-kw-primary font-bold text-white transition hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kw-primary ${
+          isLarge ? 'px-9 py-4 text-base sm:px-12' : 'px-6 py-3 text-sm'
         }`}
       >
         Buscar

@@ -23,7 +23,6 @@ export function PropertySearchBar() {
   return (
     <LocationAutocompleteBar
       size="lg"
-      className="mt-10"
       formAction="/propiedades"
       onSelectResult={goToResult}
     />
