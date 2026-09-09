@@ -1,3 +1,4 @@
+import { isEventUrl } from '@/src/features/admin/homepage/events';
 import Image from "next/image";
 import styles from "./AlliesSection.module.css";
 import type { HomepageSection } from "@/src/features/admin/homepage/types";
@@ -15,11 +16,12 @@ const allies = [
   "/Ally-slider-11.png",
 ] as const;
 
-function AllyLogos({ duplicate = false, items = allies }: { duplicate?: boolean; items?: readonly string[] }) {
+function AllyLogos({ duplicate = false, items = allies.map(imageUrl => ({ imageUrl, href: '' })) }: { duplicate?: boolean; items?: readonly { imageUrl: string; href: string }[] }) {
   return (
     <div className={styles.group} aria-hidden={duplicate || undefined}>
-      {items.map((src, index) => (
-        <div key={src} className="flex h-28 w-52 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/4 px-7 sm:h-32 sm:w-60">
+      {items.map(({ imageUrl: src, href }, index) => (
+        <div key={`${src}-${index}`} className="flex h-28 w-52 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/4 px-7 sm:h-32 sm:w-60">
+          <a href={isEventUrl(href) ? href : undefined} tabIndex={duplicate ? -1 : undefined} className="flex h-full w-full items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-white" target="_blank" rel="noopener noreferrer">
           <Image
             src={src}
             alt={duplicate ? "" : `Logo de aliado KW México ${index + 1}`}
@@ -28,6 +30,7 @@ function AllyLogos({ duplicate = false, items = allies }: { duplicate?: boolean;
             sizes="(min-width: 640px) 200px, 170px"
             className="w-full max-h-16 max-w-full object-contain"
           />
+          </a>
         </div>
       ))}
     </div>
@@ -36,7 +39,7 @@ function AllyLogos({ duplicate = false, items = allies }: { duplicate?: boolean;
 
 export default function AlliesSection({ content }: { content?: HomepageSection }) {
   const data = content?.data
-  const logos = Array.isArray(data?.logos) ? data.logos.map(String) : allies
+  const logos = Array.isArray(data?.logos) ? data.logos.map((item) => typeof item === 'string' ? { imageUrl: item, href: '' } : { imageUrl: String(item?.imageUrl ?? ''), href: String(item?.href ?? '').trim() }).filter(item => item.imageUrl) : allies.map(imageUrl => ({ imageUrl, href: '' }))
   return (
     <section id="aliados" className="overflow-hidden bg-kw-secondary py-16 sm:py-20" aria-labelledby="allies-title">
       <div className="mx-auto mb-12 max-w-7xl px-6 text-center lg:px-8">

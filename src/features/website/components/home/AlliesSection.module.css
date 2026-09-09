@@ -18,10 +18,6 @@
   padding-right: 1.5rem;
 }
 
-.viewport:focus-within .track {
-  animation-play-state: paused;
-}
-
 @keyframes allies-scroll {
   to { transform: translateX(-50%); }
 }

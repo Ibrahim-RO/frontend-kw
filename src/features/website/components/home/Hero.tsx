@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { PropertySearchBar } from "@/src/features/website/properties/components/PropertySearchBar";
+import { heroMediaUrl, isHeroVideo } from "@/src/features/admin/homepage/hero-media";
 import type { HomepageSection } from "@/src/features/admin/homepage/types";
 
 type LocationStatus = 'idle' | 'locating' | 'granted' | 'unavailable'
@@ -11,6 +12,9 @@ const hasGeolocation = () => typeof navigator !== 'undefined' && 'geolocation' i
 
 export default function Hero({ content }: { content?: HomepageSection }) {
   const data = content?.data
+  const mediaUrl = heroMediaUrl(data, content?.imageUrl)
+  const videoUrl = isHeroVideo(mediaUrl) ? mediaUrl : ""
+  const imageUrl = videoUrl ? "/Fondo_New_Natural.png" : mediaUrl || "/Fondo_New_Natural.png"
 
   // Completo (100vh) hasta confirmar que sí hay permiso de ubicación; solo
   // se achica cuando se confirma "granted" (ahí abajo sí va a aparecer algo
@@ -47,24 +51,15 @@ export default function Hero({ content }: { content?: HomepageSection }) {
       id="inicio"
       className={`relative isolate flex items-center overflow-hidden bg-kw-secondary ${isCompact ? 'min-h-[clamp(430px,48vw,620px)]' : 'min-h-[calc(100svh-5rem)]'}`}
     >
-      {/* Video de fondo (loop, sin audio, ya comprimido — public/Hero.webm).
-          motion-reduce:hidden lo oculta para quien prefiere menos movimiento
-          (prefers-reduced-motion), y en ese caso se ve la imagen de respaldo
-          de abajo en su lugar — misma lógica que ya usan los carruseles del
-          home, solo que aquí es puro CSS (Tailwind motion-reduce:), sin JS. */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster={content?.imageUrl || "/Fondo_New_Natural.png"}
+      <Image src={imageUrl} alt={content?.imageAlt || "Residencia contemporánea con alberca"} fill priority sizes="100vw" className="-z-20 object-cover" unoptimized={imageUrl.startsWith('http')} />
+      {videoUrl && <video
+        key={videoUrl}
+        src={videoUrl}
+        autoPlay muted loop playsInline preload="metadata"
+        poster={imageUrl}
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-20 h-full w-full object-cover motion-reduce:hidden"
-      >
-        <source src="/Hero.webm" type="video/webm" />
-      </video>
-      <Image src={content?.imageUrl || "/Fondo_New_Natural.png"} alt={content?.imageAlt || "Residencia contemporánea con alberca"} fill priority sizes="100vw" className="-z-20 hidden object-cover motion-reduce:block" unoptimized={content?.imageUrl?.startsWith('http')} />
+      />}
       <div className="absolute inset-0 -z-10 bg-kw-secondary/10" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-linear-to-t from-kw-secondary/80 to-transparent" />
 

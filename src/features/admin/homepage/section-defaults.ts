@@ -1,5 +1,5 @@
 export const sectionDefaults: Record<string, Record<string, unknown>> = {
-  hero: { title: 'Encuentra la casa de', titleAccent: 'tus sueños', subtitle: 'El camino a tu nuevo hogar empieza aquí con los expertos.', imageUrl: '/Fondo_New_Natural.png', imageAlt: 'Residencia contemporánea con alberca' },
+  hero: { videoUrl: '/Hero.webm', title: 'Encuentra la casa de', titleAccent: 'tus sueños', subtitle: 'El camino a tu nuevo hogar empieza aquí con los expertos.', imageUrl: '/Fondo_New_Natural.png', imageAlt: 'Residencia contemporánea con alberca' },
   awards: {
     title: 'Reconocimientos Internacionales', iconUrl: '/award-icon.png',
     items: [

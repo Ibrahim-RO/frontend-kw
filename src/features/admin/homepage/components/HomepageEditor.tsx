@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { heroMediaUrl, isHeroVideo } from '../hero-media'
 import { sectionData } from '../section-defaults'
 import { isEventUrl, withEventsFirst } from '../events'
 import type { HomepageSection, HomepageSettings } from '../types'
@@ -67,6 +68,11 @@ export function HomepageEditor({
     }))
 
   async function save(url: string, method: 'PATCH' | 'POST') {
+    const logos = doc.sections.find((section) => section.id === 'allies')?.data?.logos
+    if (Array.isArray(logos) && logos.some((logo) => typeof logo === 'object' && logo?.href && !isEventUrl(String(logo.href).trim()))) {
+      toast.error('Revisa los enlaces de los aliados: deben ser URLs válidas.')
+      return
+    }
     const events = doc.sections.find((section) => section.id === 'events')
     if (events?.visible && (!events.title.trim() || !isEventUrl(events.buttonUrl?.trim() ?? ''))) {
       toast.error('Eventos requiere un texto y un enlace válido (https:// o /ruta).')
@@ -350,12 +356,13 @@ function SectionEditor({
   const fields = (names: FieldDef[]) => (
     <div className="grid gap-x-5 gap-y-6 md:grid-cols-2">
       {names.map(([key, label, type = 'text']) => {
-        if (type === 'image') {
+        if (type === 'image' || type === 'media') {
           return (
             <ImageUpload
               key={key}
+              allowVideo={type === 'media'}
               label={label}
-              value={String(data[key] ?? '')}
+              value={type === 'media' ? heroMediaUrl(data, section.imageUrl) : String(data[key] ?? '')}
               onChange={(v) => set(key, v)}
             />
           )
@@ -397,7 +404,7 @@ function SectionEditor({
       ['title', 'Primera línea'],
       ['titleAccent', 'Línea destacada'],
       ['subtitle', 'Subtítulo', 'area'],
-      ['imageUrl', 'Imagen de fondo', 'image'],
+      ['mediaUrl', 'Imagen o video de fondo', 'media'],
       ['imageAlt', 'Texto alternativo'],
     ])
   } else if (section.id === 'awards') {
@@ -637,7 +644,7 @@ function SectionEditor({
 type FieldDef = [
   string,
   string,
-  type?: 'text' | 'area' | 'image',
+  type?: 'text' | 'area' | 'image' | 'media',
 ]
 
 type KeyDef = [
@@ -828,10 +835,10 @@ function ImageList({
 }: {
   title: string
   items: unknown
-  onChange: (v: string[]) => void
+  onChange: (v: { imageUrl: string; href: string }[]) => void
 }) {
   const list = Array.isArray(items)
-    ? items.map(String)
+    ? items.map((item) => typeof item === 'string' ? { imageUrl: item, href: '' } : { imageUrl: String(item?.imageUrl ?? ''), href: String(item?.href ?? '') })
     : []
 
   return (
@@ -848,7 +855,7 @@ function ImageList({
 
         <button
           type="button"
-          onClick={() => onChange([...list, ''])}
+          onClick={() => onChange([...list, { imageUrl: '', href: '' }])}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
         >
           <Plus className="size-4" />
@@ -889,15 +896,18 @@ function ImageList({
 
               <ImageUpload
                 label="Archivo del logo"
-                value={value}
+                value={value.imageUrl}
                 onChange={(v) =>
                   onChange(
                     list.map((x, j) =>
-                      j === i ? v : x,
+                      j === i ? { ...x, imageUrl: v } : x,
                     ),
                   )
                 }
               />
+              <Text label="Enlace a su página (opcional, https://...)" value={value.href}
+                onChange={(href) => onChange(list.map((x, j) => j === i ? { ...x, href } : x))} />
+              {value.href && !isEventUrl(value.href.trim()) && <p className="text-sm text-destructive">Introduce un enlace válido con https://.</p>}
             </div>
           ))}
         </div>
@@ -954,16 +964,19 @@ function Area({
 }
 
 function ImageUpload({
+  allowVideo = false,
   label,
   value,
   onChange,
 }: {
+  allowVideo?: boolean
   label: string
   value?: string
   onChange: (v: string) => void
 }) {
   const [uploading, setUploading] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const video = allowVideo && isHeroVideo(value ?? '')
 
   async function upload(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -972,8 +985,14 @@ function ImageUpload({
 
     if (!file) return
 
-    if (file.size > 8 * 1024 * 1024) {
-      return toast.error('Máximo 8 MB')
+    const fileIsVideo = file.type.startsWith('video/')
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', ...(allowVideo ? ['video/mp4', 'video/webm'] : [])]
+    if (!allowedTypes.includes(file.type)) {
+      return toast.error('Formato de archivo no permitido')
+    }
+
+    if (file.size > (fileIsVideo ? 50 : 8) * 1024 * 1024) {
+      return toast.error(fileIsVideo ? 'Máximo 50 MB' : 'Máximo 8 MB')
     }
 
     setUploading(true)
@@ -998,7 +1017,7 @@ function ImageUpload({
 
       onChange(data.url)
 
-      toast.success('Imagen subida')
+      toast.success(fileIsVideo ? 'Video subido' : 'Imagen subida')
     } catch {
       toast.error('No se pudo subir')
     } finally {
@@ -1016,16 +1035,16 @@ function ImageUpload({
             <button
               type="button"
               aria-label={`Ampliar ${label}`}
-              title="Ver imagen en pantalla completa"
+              title="Ver archivo en pantalla completa"
               onClick={() => setExpanded(true)}
               className="group relative flex size-24 shrink-0 cursor-zoom-in items-center justify-center overflow-hidden rounded-lg border p-2 shadow-inner ring-1 ring-black/5"
               style={previewBackground}
             >
-              <img
+              {video ? <video src={value} muted playsInline preload="metadata" className="max-h-full max-w-full" /> : <img
                 src={value}
                 alt="Vista previa"
                 className="relative z-10 max-h-full max-w-full object-contain drop-shadow-sm"
-              />
+              />}
               <span className="absolute inset-0 z-20 flex items-center justify-center bg-black/0 text-white opacity-0 transition group-hover:bg-black/35 group-hover:opacity-100">
                 <Maximize2 className="size-6 drop-shadow" />
               </span>
@@ -1038,7 +1057,7 @@ function ImageUpload({
 
           <div className="min-w-0 flex-1">
             <p className="mb-2 text-xs text-muted-foreground">
-              JPG, PNG, WebP o GIF · máximo 8 MB
+              {allowVideo ? 'JPG, PNG, WebP o GIF (8 MB); MP4 o WebM (50 MB).' : 'JPG, PNG, WebP o GIF · máximo 8 MB'}
             </p>
 
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-primary px-4 py-2.5 text-sm font-semibold text-primary shadow-sm transition hover:bg-primary/5">
@@ -1050,11 +1069,12 @@ function ImageUpload({
 
               {uploading
                 ? 'Subiendo...'
-                : 'Seleccionar imagen'}
+                : allowVideo ? 'Seleccionar imagen o video' : 'Seleccionar imagen'}
 
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
+                accept={allowVideo ? "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm" : "image/jpeg,image/png,image/webp,image/gif"}
+                disabled={uploading}
                 className="sr-only"
                 onChange={upload}
               />
@@ -1064,13 +1084,13 @@ function ImageUpload({
 
         <div className="mt-4 border-t pt-4">
           <label className="mb-2 block text-xs font-medium text-muted-foreground">
-            O introduce la URL de la imagen
+            {allowVideo ? 'O introduce la URL de la imagen o video' : 'O introduce la URL de la imagen'}
           </label>
 
           <input
             className={input}
             value={value ?? ''}
-            placeholder="https://... o /imagen.png"
+            placeholder={allowVideo ? "https://... o /video.webm" : "https://... o /imagen.png"}
             onChange={(e) => onChange(e.target.value)}
           />
         </div>
@@ -1098,11 +1118,11 @@ function ImageUpload({
             style={previewBackground}
             onClick={(e) => e.stopPropagation()}
           >
-            <img
+            {video ? <video src={value} controls playsInline className="max-h-[80vh] max-w-full" /> : <img
               src={value}
               alt={label}
               className="max-h-[calc(100vh-4rem)] max-w-[calc(100vw-2rem)] object-contain drop-shadow-md sm:max-h-[calc(100vh-6rem)] sm:max-w-[calc(100vw-6rem)]"
-            />
+            />}
           </div>
         </div>
       )}
