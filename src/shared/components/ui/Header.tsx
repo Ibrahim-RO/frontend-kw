@@ -33,6 +33,8 @@ export default function Header() {
     const pathname = usePathname();
     const menuId = useId();
     const desktopMenuRef = useRef<HTMLDivElement>(null);
+    const mobileDialogRef = useRef<HTMLDivElement>(null);
+    const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
     const isHome = pathname === "/";
     const visibleNavigation = navigationItems.filter((item) => isHome || !item.homeOnly);
 
@@ -89,6 +91,18 @@ export default function Header() {
         };
     }, [isMenuOpen]);
 
+    // El overlay móvil ahora queda montado siempre (para poder animar su
+    // apertura/cierre con transición CSS en vez de aparecer/desaparecer de
+    // golpe) — por eso ya no hay un mount fresco en cada apertura que reponga
+    // el scroll y el foco solo. Se hace a mano aquí. En desktop el overlay
+    // sigue sin renderizarse visualmente (lg:hidden), así que enfocar/hacer
+    // scroll ahí es un no-op inofensivo.
+    useEffect(() => {
+        if (!isMenuOpen) return;
+        mobileDialogRef.current?.scrollTo({ top: 0 });
+        mobileCloseButtonRef.current?.focus();
+    }, [isMenuOpen]);
+
     const isItemActive = ({ href, section }: NavigationItem) => {
         if (section) {
             if (!isHome) return false;
@@ -110,6 +124,14 @@ export default function Header() {
         target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
         window.history.replaceState(null, "", `#${item.section}`);
     };
+
+    // Cascada de entrada de los links del menú móvil: cada uno arranca su
+    // transición un poco después del anterior (solo al abrir — al cerrar
+    // todos salen juntos, se siente más rápido/limpio). Tailwind no puede
+    // generar una clase `delay-[Nms]` a partir de un template string (su
+    // analizador necesita ver la clase completa y literal en el código
+    // fuente), así que este valor va por `style`, no por className.
+    const mobileStaggerDelay = (index: number) => (isMenuOpen ? `${120 + index * 45}ms` : "0ms");
 
     return (
         <>
@@ -152,33 +174,60 @@ export default function Header() {
                 </nav>
             </header>
 
-            {isMenuOpen && (
-                <div role="dialog" aria-modal="true" aria-label="Menú de navegación" className="fixed inset-0 z-[80] overflow-y-auto bg-neutral-950 text-white lg:hidden">
-                    <span aria-hidden="true" className="pointer-events-none fixed -right-5 top-1/2 -translate-y-1/2 text-[15rem] font-black leading-none text-white/5 italic">KW</span>
-                    <button type="button" className="fixed top-6 right-6 z-20 rounded-md p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-red-500" aria-label="Cerrar menú" onClick={closeMenu} autoFocus><X size={36} /></button>
+            {/* Montado siempre (antes era {isMenuOpen && (...)}) para poder
+                animar apertura/cierre en vez de que aparezca/desaparezca de
+                golpe. Visibilidad e interactividad se controlan con clases +
+                `inert` (nativo de React 19), no con mount/unmount.
+                `pointer-events-none` es un refuerzo defensivo además de
+                `inert`. Solo afecta el overlay móvil (lg:hidden) — el
+                dropdown de escritorio de arriba no se toca.
 
-                    <div className="relative z-10 flex min-h-full flex-col px-6 pt-20 pb-8">
-                        <nav aria-label="Navegación móvil" className="flex flex-1 flex-col justify-center gap-2 py-5">
-                            {visibleNavigation.map((item, index) => {
-                                const active = isItemActive(item);
-                                return <Link key={item.href} href={item.href} onClick={(event) => item.section && isHome ? handleSectionNavigation(event, item) : closeMenu()} aria-current={active ? "page" : undefined} className={`group flex items-baseline gap-4 border-b py-3 text-xl font-semibold transition-colors hover:text-red-500 ${active ? "border-red-500 text-red-500" : "border-white/10"}`}><span className="text-xs font-normal tabular-nums text-red-500">{String(index + 1).padStart(2, "0")}</span>{item.mobileLabel ?? item.label}</Link>;
-                            })}
-                        </nav>
+                Animación: el fondo se revela como un círculo que crece
+                desde la esquina donde está el botón de hamburguesa
+                (clip-path, no un simple fade de opacidad) y el contenido
+                entra en cascada — cada link, y luego "Recursos" y el CTA
+                final, arrancan su propia transición un poco después del
+                anterior (mobileStaggerDelay) en vez de moverse todos a la
+                vez. Al cerrar no hay cascada (todo sale junto, más rápido). */}
+            <div
+                ref={mobileDialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Menú de navegación"
+                inert={!isMenuOpen}
+                className={`fixed inset-0 z-[80] overflow-y-auto bg-neutral-950 text-white transition-[clip-path] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[clip-path] motion-reduce:transition-none lg:hidden ${isMenuOpen ? "duration-500 [clip-path:circle(150%_at_top_right)]" : "duration-300 pointer-events-none [clip-path:circle(0%_at_top_right)]"}`}
+            >
+                <span aria-hidden="true" className={`pointer-events-none fixed -right-5 top-1/2 -translate-y-1/2 text-[15rem] font-black leading-none text-white/5 italic transition-all duration-700 delay-150 ease-out motion-reduce:transition-none ${isMenuOpen ? "scale-100 opacity-100" : "scale-90 opacity-0"}`}>KW</span>
+                <button type="button" ref={mobileCloseButtonRef} className={`fixed top-6 right-6 z-20 rounded-md p-2 text-white/80 transition-all duration-300 ease-out hover:bg-white/10 hover:text-red-500 motion-reduce:transition-none ${isMenuOpen ? "scale-100 opacity-100" : "scale-50 opacity-0"}`} aria-label="Cerrar menú" onClick={closeMenu}><X size={36} /></button>
 
-                        <details className="my-5 border-y border-white/10 py-4">
-                            <summary className="cursor-pointer text-sm font-bold text-white">Recursos para agentes</summary>
-                            <div className="mt-3 grid gap-1">
-                                {resources.map((resource) => <a key={resource.href} href={resource.href} target="_blank" rel="noreferrer" className="flex items-center justify-between py-2 text-sm text-white/60 transition hover:text-red-500">{resource.label}<ExternalLink size={14} /></a>)}
-                            </div>
-                        </details>
+                <div className="relative z-10 flex min-h-full flex-col px-6 pt-20 pb-8">
+                    <nav aria-label="Navegación móvil" className="flex flex-1 flex-col justify-center gap-2 py-5">
+                        {visibleNavigation.map((item, index) => {
+                            const active = isItemActive(item);
+                            return (
+                                <Link key={item.href} href={item.href} onClick={(event) => item.section && isHome ? handleSectionNavigation(event, item) : closeMenu()} aria-current={active ? "page" : undefined} className={`group flex border-b py-3 text-xl font-semibold transition-colors hover:text-red-500 ${active ? "border-red-500 text-red-500" : "border-white/10"}`}>
+                                    <span style={{ transitionDelay: mobileStaggerDelay(index) }} className={`flex items-baseline gap-4 transition-[transform,opacity] duration-500 ease-out motion-reduce:transition-none ${isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"}`}>
+                                        <span className="text-xs font-normal tabular-nums text-red-500">{String(index + 1).padStart(2, "0")}</span>
+                                        {item.mobileLabel ?? item.label}
+                                    </span>
+                                </Link>
+                            );
+                        })}
+                    </nav>
 
-                        <div className="flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                            <a href="tel:+524422512295" className="flex items-center gap-3 text-sm text-white/70 transition-colors hover:text-white"><Phone className="text-red-500" size={20} />(52) 442 251 2295</a>
-                            <Link href="/#contact" onClick={(event) => handleSectionNavigation(event, { href: "/#contact", label: "Contacto", section: "contact" })} className="rounded-lg bg-red-600 px-6 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-white hover:text-neutral-900">Buscar Propiedades</Link>
+                    <details style={{ transitionDelay: mobileStaggerDelay(visibleNavigation.length) }} className={`my-5 border-y border-white/10 py-4 transition-all duration-500 ease-out motion-reduce:transition-none ${isMenuOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+                        <summary className="cursor-pointer text-sm font-bold text-white">Recursos para agentes</summary>
+                        <div className="mt-3 grid gap-1">
+                            {resources.map((resource) => <a key={resource.href} href={resource.href} target="_blank" rel="noreferrer" className="flex items-center justify-between py-2 text-sm text-white/60 transition hover:text-red-500">{resource.label}<ExternalLink size={14} /></a>)}
                         </div>
+                    </details>
+
+                    <div style={{ transitionDelay: mobileStaggerDelay(visibleNavigation.length + 1) }} className={`flex flex-col gap-4 border-t border-white/10 pt-6 transition-all duration-500 ease-out motion-reduce:transition-none sm:flex-row sm:items-center sm:justify-between ${isMenuOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+                        <a href="tel:+524422512295" className="flex items-center gap-3 text-sm text-white/70 transition-colors hover:text-white"><Phone className="text-red-500" size={20} />(52) 442 251 2295</a>
+                        <Link href="/#contact" onClick={(event) => handleSectionNavigation(event, { href: "/#contact", label: "Contacto", section: "contact" })} className="rounded-lg bg-red-600 px-6 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-white hover:text-neutral-900">Buscar Propiedades</Link>
                     </div>
                 </div>
-            )}
+            </div>
         </>
     );
 }
