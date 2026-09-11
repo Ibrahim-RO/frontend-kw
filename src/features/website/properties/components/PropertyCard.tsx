@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import type { Property } from '../types'
-import { formatPrice, getPropertyLocation, isRental } from '../lib/format'
+import { formatPrice, getAgentFullName, getPropertyLocation, isRental } from '../lib/format'
 import { getOperationLabel } from '../lib/property-options'
 import { LuxuryRibbon } from '@/src/shared/components/LuxuryRibbon'
+import { useAgent } from '../hooks/useAgent'
 
 export function PropertyCard({ property }: { property: Property }) {
+  const { data: agent } = useAgent(property.Agent_ID)
+
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl">
       {property.Luxury === 1 && <LuxuryRibbon />}
@@ -35,6 +38,7 @@ export function PropertyCard({ property }: { property: Property }) {
         </Link>
         <p className="mb-3.5 text-xs text-kw-tertiary">{getPropertyLocation(property) || property.Geo_Direccion_Completa}</p>
 
+
         <ul className="mb-4 flex flex-wrap gap-2">
           {property.Total_Bed != null && (
             <li className="rounded-md bg-neutral-100 px-2.5 py-1.5 text-xs font-semibold text-neutral-700">
@@ -54,6 +58,11 @@ export function PropertyCard({ property }: { property: Property }) {
         </ul>
 
         <div className="border-t border-neutral-200 pt-3.5">
+          <div className="mb-3">            
+            <span className="block text-sm font-bold text-kw-secondary">
+              {agent ? getAgentFullName(agent) : 'KW México'}
+            </span>
+          </div>
           <Link
             href={`/propiedades/${property.ID}`}
             className="block w-full rounded-sm bg-kw-primary px-4 py-2.5 text-center text-xs font-bold tracking-wider text-white uppercase transition-colors hover:bg-kw-secondary"

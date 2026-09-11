@@ -15,6 +15,14 @@ const PROPERTIES_PAGE_SIZE = 12
 export function MarketCenterDetailPage({ id }: { id: string }) {
   const { data, isLoading, isError } = useMarketCenter(id)
   const marketCenter = data?.data[0]
+  const mapQuery = marketCenter
+    ? encodeURIComponent(
+        [marketCenter.Street, marketCenter.Municipality, marketCenter.State, marketCenter.Postal_Code, 'México']
+          .filter(Boolean)
+          .join(', '),
+      )
+    : ''
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`
 
   const [tab, setTab] = useState<'agentes' | 'propiedades'>('agentes')
   const [page, setPage] = useState(1)
@@ -39,6 +47,8 @@ export function MarketCenterDetailPage({ id }: { id: string }) {
     propertiesPage * PROPERTIES_PAGE_SIZE,
   )
 
+  console.log(properties)
+
   return (
     <main className="mx-auto mb-16 max-w-7xl px-4 pt-10">
       <Link
@@ -62,63 +72,82 @@ export function MarketCenterDetailPage({ id }: { id: string }) {
 
       {marketCenter && (
         <>
-          <section className="relative overflow-hidden rounded-3xl border border-neutral-200 bg-white p-8 shadow-xl md:p-10">
-            <div className="absolute top-0 left-0 h-1 w-full bg-kw-primary" />
+          <section className="relative overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-xl">
+            <div className="absolute top-0 left-0 z-10 h-1 w-full bg-kw-primary" />
 
-            <div className="flex flex-col gap-8 md:flex-row md:items-start">
-              {marketCenter.Logo_Url_One && (
-                <img
-                  src={marketCenter.Logo_Url_One}
-                  alt={marketCenter.Market_Center}
-                  className="h-28 w-28 shrink-0 rounded-2xl border border-neutral-200 object-contain p-3"
-                />
-              )}
+            <div className="flex flex-col lg:flex-row lg:items-stretch">
+              <div className="flex min-w-0 flex-1 flex-col gap-8 p-5 sm:p-8 md:flex-row md:items-start md:p-10">
+                {marketCenter.Logo_Url_One && (
+                  <img
+                    src={marketCenter.Logo_Url_One}
+                    alt={marketCenter.Market_Center}
+                    className="h-28 w-28 shrink-0 rounded-2xl border border-neutral-200 object-contain p-3"
+                  />
+                )}
 
-              <div className="min-w-0 flex-1">
-                <h1 className="mb-2 font-heading text-3xl font-bold text-kw-secondary md:text-4xl">
-                  {marketCenter.Market_Center}
-                </h1>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    [marketCenter.Street, marketCenter.Municipality, marketCenter.State, marketCenter.Postal_Code, 'México']
-                      .filter(Boolean)
-                      .join(', '),
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  title="Abrir en Google Maps para navegación"
-                  className="mb-6 flex items-center text-lg text-kw-tertiary transition-colors hover:text-kw-primary hover:underline"
-                >
-                  <MapPin className="mr-2 shrink-0 text-kw-primary" size={20} />
-                  {marketCenter.Street}, {marketCenter.Municipality}, {marketCenter.State}
-                  {marketCenter.Postal_Code ? `, ${marketCenter.Postal_Code}` : ''}
-                </a>
+                <div className="min-w-0 flex-1 wrap-anywhere">
+                  <h1 className="mb-2 font-heading text-3xl font-bold text-kw-secondary md:text-4xl">
+                    {marketCenter.Market_Center}
+                  </h1>
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    title="Abrir en Google Maps para navegación"
+                    className="mb-6 flex items-center text-lg text-kw-tertiary transition-colors hover:text-kw-primary hover:underline"
+                  >
+                    <MapPin className="mr-2 shrink-0 text-kw-primary" size={20} />
+                    {marketCenter.Street}, {marketCenter.Municipality}, {marketCenter.State}
+                    {marketCenter.Postal_Code ? `, ${marketCenter.Postal_Code}` : ''}
+                  </a>
 
-                <div className="mb-8 flex flex-wrap gap-4">
-                  {marketCenter.Phone && (
-                    <a
-                      href={`tel:${marketCenter.Phone}`}
-                      className="flex items-center gap-2 rounded-xl border border-neutral-300 px-4 py-2.5 font-semibold text-kw-secondary transition-colors hover:bg-neutral-100"
-                    >
-                      <Phone size={16} className="text-kw-primary" /> {marketCenter.Phone}
-                    </a>
-                  )}
-                  {marketCenter.Email && (
-                    <a
-                      href={`mailto:${marketCenter.Email}`}
-                      className="flex items-center gap-2 rounded-xl bg-kw-primary px-4 py-2.5 font-semibold text-white transition-colors hover:bg-kw-primary/90"
-                    >
-                      <Mail size={16} /> {marketCenter.Email}
-                    </a>
+                  <div className="mb-8 flex flex-wrap gap-4">
+                    {marketCenter.Phone && (
+                      <a
+                        href={`tel:${marketCenter.Phone}`}
+                        className="flex items-center gap-2 rounded-xl border border-neutral-300 px-4 py-2.5 font-semibold text-kw-secondary transition-colors hover:bg-neutral-100"
+                      >
+                        <Phone size={16} className="text-kw-primary" /> {marketCenter.Phone}
+                      </a>
+                    )}
+                    {marketCenter.Email && (
+                      <a
+                        href={`mailto:${marketCenter.Email}`}
+                        className="flex min-w-0 max-w-full items-center gap-2 rounded-xl bg-kw-primary px-4 py-2.5 font-semibold text-white transition-colors hover:bg-kw-primary/90"
+                      >
+                        <Mail size={16} className="shrink-0" /> <span className="min-w-0 wrap-anywhere">{marketCenter.Email}</span>
+                      </a>
+                    )}
+                  </div>
+
+                  {marketCenter.Description && (
+                    <div className="space-y-4 leading-relaxed whitespace-pre-line text-kw-tertiary">
+                      {marketCenter.Description}
+                    </div>
                   )}
                 </div>
-
-                {marketCenter.Description && (
-                  <div className="space-y-4 leading-relaxed whitespace-pre-line text-kw-tertiary">
-                    {marketCenter.Description}
-                  </div>
-                )}
               </div>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Ver ubicación de ${marketCenter.Market_Center} en Google Maps (abre en otra pestaña)`}
+                className="group relative block h-56 w-full shrink-0 overflow-hidden bg-neutral-100 focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-kw-primary lg:h-auto lg:min-h-56 lg:w-1/4"
+              >
+                <iframe
+                  src={`https://www.google.com/maps?q=${mapQuery}&z=15&output=embed`}
+                  title={`Mapa de ${marketCenter.Market_Center}`}
+                  className="pointer-events-none absolute inset-0 h-full w-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                />
+                <span className="absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 rounded-xl bg-white/95 px-3 py-2 text-sm font-semibold text-kw-secondary shadow-sm transition-colors group-hover:text-kw-primary">
+                  <MapPin size={16} className="shrink-0 text-kw-primary" />
+                  Abrir en Google Maps
+                </span>
+              </a>
             </div>
           </section>
 

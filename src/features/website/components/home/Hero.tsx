@@ -68,7 +68,7 @@ export default function Hero({ content }: { content?: HomepageSection }) {
           sin importar el ancho de pantalla. */}
       <div className="absolute inset-x-0 top-6 z-10 mx-auto max-w-7xl px-6 lg:top-8 lg:px-8">
         <h1 className="font-heading text-2xl leading-snug font-medium tracking-wide text-white lg:text-3xl">
-          {String(data?.title || 'Encuentra la casa de')} <span className="block text-kw-primary">{String(data?.titleAccent || 'tus sueños')}</span>
+          {String(data?.title || '')} <span className="block text-kw-primary">{String(data?.titleAccent || '')}</span>
         </h1>
       </div>
 
