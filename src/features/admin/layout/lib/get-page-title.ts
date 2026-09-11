@@ -1,9 +1,9 @@
-import { adminFooterNavItems, adminNavItems } from '../config/nav-items.config'
+import { adminNavItems } from '../config/nav-items.config'
 
 const DEFAULT_TITLE = 'Panel de administración'
 
 export function getPageTitle(pathname: string) {
-  const items = [...adminNavItems, ...adminFooterNavItems]
+  const items = [...adminNavItems]
   const activeItem = items.find(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
   )

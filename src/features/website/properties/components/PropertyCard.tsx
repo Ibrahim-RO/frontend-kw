@@ -57,12 +57,6 @@ export function PropertyCard({ property }: { property: Property }) {
         </ul>
 
         <div className="border-t border-neutral-200 pt-3.5">
-          <div className="mb-3">
-            <span className="block text-xs tracking-wide text-neutral-400 uppercase">Asesor asignado</span>
-            <span className="block text-sm font-bold text-kw-secondary">
-              {agent ? getAgentFullName(agent) : 'KW México'}
-            </span>
-          </div>
           <Link
             href={`/propiedades/${property.ID}`}
             className="block w-full rounded-sm bg-kw-primary px-4 py-2.5 text-center text-xs font-bold tracking-wider text-white uppercase transition-colors hover:bg-kw-secondary"

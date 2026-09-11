@@ -33,9 +33,9 @@ export const adminNavItems: AdminNavItem[] = [
   { label: 'Configuración', href: '/admin/configuracion', icon: Settings },
 ]
 
-export const adminFooterNavItems: AdminNavItem[] = [
-  { label: 'Estado del sistema', href: '/admin/sistema', icon: Activity },
-]
+// export const adminFooterNavItems: AdminNavItem[] = [
+//   { label: 'Estado del sistema', href: '/admin/sistema', icon: Activity },
+// ]
 
 export function canAccessNavItem(item: AdminNavItem, isAdmin: boolean, modules: ModuleKey[]): boolean {
   if (item.adminOnly) return isAdmin
